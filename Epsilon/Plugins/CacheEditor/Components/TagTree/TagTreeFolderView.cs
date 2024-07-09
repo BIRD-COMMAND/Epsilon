@@ -53,6 +53,8 @@ namespace CacheEditor.Components.TagTree
                     roots.Insert(0, node);
                 }
             }
+
+            SortNodes(roots);
         }
 
         private TagTreeNode FindNodeWithText(IList<ITreeNode> nodes, string text)
@@ -85,6 +87,20 @@ namespace CacheEditor.Components.TagTree
                 var fileName = Path.GetFileName(tag.Name);
                 return $"{fileName}.{tag.Group}";
             }
+        }
+
+        private void SortNodes(IList<ITreeNode> nodes)
+        {
+            var folderNodes = nodes.OfType<TagTreeFolderNode>().OrderBy(n => n.Text).ToList();
+            var tagNodes = nodes.OfType<TagTreeTagNode>().OrderBy(n => n.Text).ToList();
+
+            nodes.Clear();
+
+            foreach (var folderNode in folderNodes)
+                nodes.Add(folderNode);
+
+            foreach (var tagNode in tagNodes)
+                nodes.Add(tagNode);
         }
     }
 
