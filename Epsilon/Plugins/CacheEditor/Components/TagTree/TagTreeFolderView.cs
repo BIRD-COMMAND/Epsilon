@@ -12,6 +12,7 @@ namespace CacheEditor.Components.TagTree
         public IEnumerable<ITreeNode> BuildTree(GameCache cache, Func<CachedTag, bool> filter)
         {
             var tree = new List<ITreeNode>();
+            var folderLookup = new Dictionary<string, TagTreeFolderNode>();
 
             var tags = cache.TagCache
                 .NonNull()
@@ -19,51 +20,44 @@ namespace CacheEditor.Components.TagTree
                 .OrderByDescending(tag => tag.Name);
 
             foreach (var tag in tags)
-                AddTag(tree, tag);
+                AddTag(tree, folderLookup, tag);
+
+            SortNodes(tree);
 
             return tree;
         }
 
-        private void AddTag(IList<ITreeNode> roots, CachedTag tag)
+        private void AddTag(IList<ITreeNode> roots, Dictionary<string, TagTreeFolderNode> folderLookup, CachedTag tag)
         {
             if(tag.Name == null)
             {
-                var node = CreateTagNode(tag);
-                roots.Add(node);
+                roots.Add(CreateTagNode(tag));
                 return;
             }
 
             var segments = tag.Name.Split('\\');
+            IList<ITreeNode> currentRoots = roots;
+
             for(int i = 0; i < segments.Length; i++)
             {
                 if (i < segments.Length - 1)
                 {
-                    var node = FindNodeWithText(roots, segments[i]);
-                    if(node == null)
+                    var folderKey = string.Join("\\", segments.Take(i + 1));
+
+                    if (!folderLookup.TryGetValue(folderKey, out var node)) 
                     {
                         node = CreateFolderNode(segments[i]);
-                        roots.Insert(0, node);
+                        currentRoots.Add(node);
+                        folderLookup[folderKey] = node;
                     }
 
-                    roots = node.Children;
+                    currentRoots = node.Children;
                 }
                 else
                 {
-                    var node = CreateTagNode(tag);
-                    roots.Insert(0, node);
+                    currentRoots.Add(CreateTagNode(tag));
                 }
             }
-
-            SortNodes(roots);
-        }
-
-        private TagTreeNode FindNodeWithText(IList<ITreeNode> nodes, string text)
-        {
-            for (int j = 0; j < nodes.Count; j++)
-                if (nodes[j] is TagTreeNode n && n.Text == text)
-                    return n;
-
-            return null;
         }
 
         private TagTreeFolderNode CreateFolderNode(string name)
@@ -78,7 +72,7 @@ namespace CacheEditor.Components.TagTree
 
         private string FormatName(CachedTag tag)
         {
-            if(tag.Name == null)
+            if (tag.Name == null)
             {
                 return $"0x{tag.Index:X8}.{tag.Group}";
             }
@@ -95,12 +89,14 @@ namespace CacheEditor.Components.TagTree
             var tagNodes = nodes.OfType<TagTreeTagNode>().OrderBy(n => n.Text).ToList();
 
             nodes.Clear();
-
             foreach (var folderNode in folderNodes)
                 nodes.Add(folderNode);
 
             foreach (var tagNode in tagNodes)
                 nodes.Add(tagNode);
+
+            foreach (var folderNode in folderNodes)
+                SortNodes(folderNode.Children);
         }
     }
 
