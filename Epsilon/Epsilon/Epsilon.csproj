@@ -356,18 +356,12 @@
     <Resource Include="MainIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>cd $(ProjectDir)$(OutDir)\Tools
-move "fmod.dll" $(ProjectDir)$(OutDir)
-move "LZ4.dll" $(ProjectDir)$(OutDir)
-move "assimp.dll" $(ProjectDir)$(OutDir)
-move "AssimpNet.dll" $(ProjectDir)$(OutDir)
-
-if ERRORLEVEL == 0 (
-    SET ERRORLEVEL=0
-)
-EXIT %25ERRORLEVEL%25</PostBuildEvent>
-  </PropertyGroup>
+  <Target Name="MoveDependencies" AfterTargets="Build">
+    <Move SourceFiles="$(ProjectDir)$(OutDir)\Tools\fmod.dll" DestinationFolder="$(ProjectDir)$(OutDir)" />
+    <Move SourceFiles="$(ProjectDir)$(OutDir)\Tools\LZ4.dll" DestinationFolder="$(ProjectDir)$(OutDir)" />
+    <Move SourceFiles="$(ProjectDir)$(OutDir)\Tools\assimp.dll" DestinationFolder="$(ProjectDir)$(OutDir)" />
+    <Move SourceFiles="$(ProjectDir)$(OutDir)\Tools\AssimpNet.dll" DestinationFolder="$(ProjectDir)$(OutDir)" />
+  </Target>
   <Target Name="RemoveSatelliteAssemblies" AfterTargets="ResolveAssemblyReferences">
     <ItemGroup>
       <ReferenceCopyLocalPaths Remove="@(ReferenceSatellitePaths)" />
