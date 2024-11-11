@@ -1,3 +1,4 @@
 [submodule "TagTool"]
 	path = TagTool
 	url = https://github.com/TheGuardians/TagTool.git
+	branch = dev
