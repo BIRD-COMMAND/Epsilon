@@ -26,6 +26,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheEditor", "plugins\CacheEditor\CacheEditor.csproj", "{9DE40A24-8308-4C7D-B77E-71E9D389BBFA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xceed.Wpf.AvalonDock", "libs\Xceed.Wpf.AvalonDock\Xceed.Wpf.AvalonDock.csproj", "{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}"
+	ProjectSection(ProjectDependencies) = postProject
+		{42814DEE-5A94-4901-BDA9-28AFD2D4F5AC} = {42814DEE-5A94-4901-BDA9-28AFD2D4F5AC}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DefinitionEditor", "plugins\DefinitionEditor\DefinitionEditor.csproj", "{CDCE8946-359A-488F-802E-CB664B6F97DF}"
 EndProject
