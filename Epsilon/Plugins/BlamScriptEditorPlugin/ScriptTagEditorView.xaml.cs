@@ -52,7 +52,11 @@ namespace BlamScriptEditorPlugin
             {
                 var cursorPosition = ScriptSourceTextBox.SelectionStart;
                 string toPaste = Clipboard.GetText();
-                ScriptSourceTextBox.Text = ScriptSourceTextBox.Text.Insert(cursorPosition, (toPaste));
+                if (string.IsNullOrEmpty(toPaste)){
+                    e.Handled = true;
+                    return;
+                }
+				ScriptSourceTextBox.Text = ScriptSourceTextBox.Text.Insert(cursorPosition, (toPaste));
                 ScriptSourceTextBox.SelectionStart = cursorPosition + toPaste.Length;
 
                 e.Handled = true;
