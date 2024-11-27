@@ -140,9 +140,12 @@
                         </DataTrigger>
                     </HierarchicalDataTemplate.Triggers>
                 </HierarchicalDataTemplate>
-                
+
             </TreeView.Resources>
             
+            <!-- Previously, if the TreeViewItem was selected via TAB / keyboard navigation,
+            there was no indicator at all which item was focused. This updated implementation 
+            accurately reflects to the user if the TreeViewItem is selected / keyboard-focused. -->
             <TreeView.ItemContainerStyle>
                 <Style
                     BasedOn="{StaticResource {x:Type TreeViewItem}}"
@@ -150,12 +153,17 @@
                     <Setter Property="TextElement.Foreground" Value="{Binding TextColor, Converter={ThemeCore:ColorHintConverter}, FallbackValue=#d0d0d0}" />
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                    <EventSetter
-                        Event="RequestBringIntoView"
-                        Handler="TreeViewItem_RequestBringIntoView" />
+                    <EventSetter Event="RequestBringIntoView" Handler="TreeViewItem_RequestBringIntoView" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </TreeView.ItemContainerStyle>
-            
+
+
         </TreeView>
     </DockPanel>
 </UserControl>

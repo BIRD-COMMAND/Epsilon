@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CacheEditor;
+using System.ComponentModel;
 
 namespace CacheEditor.Components.TagTree
 {
@@ -19,12 +20,36 @@ namespace CacheEditor.Components.TagTree
         public TagTreeView()
         {
             InitializeComponent();
+
             Loaded += TagTreeView_Loaded;
 
-            EventManager.RegisterClassHandler(typeof(Window), Window.PreviewKeyUpEvent, new KeyEventHandler(TagTreeWindowKeyUp));
+            SearchBox.KeyDown += TreeView_SearchBox_HandleSpecialKeys;
+            SearchBox.LostFocus += TreeView_SearchBox_LostFocus;
+
+			EventManager.RegisterClassHandler(typeof(Window), Window.PreviewKeyUpEvent, new KeyEventHandler(TagTreeWindowKeyUp));
         }
 
-        private void TagTreeView_Loaded(object sender, RoutedEventArgs e)
+        #region Automatic selection of the first item in the tree view when the TAB key is pressed
+
+        private bool _autoSelectedFirstItem = false;
+
+		private void TreeView_SearchBox_HandleSpecialKeys(object sender, KeyEventArgs e) {
+			// If SearchBox has focus and the TAB key has been pressed, try to focus the first item in the tree view.
+			if (e.Key == Key.Tab && (TagTree?.Items?.Count ?? 0) > 0) {
+				_ = ( (TreeViewItem)TagTree.ItemContainerGenerator.ContainerFromIndex(0) )?.Focus();
+                e.Handled = true;
+			    _autoSelectedFirstItem = true;
+			}
+		}
+
+		private void TreeView_SearchBox_LostFocus(object sender, RoutedEventArgs e) {
+			// Reset the flag when the SearchBox loses focus.
+			_autoSelectedFirstItem = false;
+		}
+
+        #endregion
+
+		private void TagTreeView_Loaded(object sender, RoutedEventArgs e)
         {
             SearchBox.Focus();
             Keyboard.Focus(SearchBox);
@@ -43,7 +68,7 @@ namespace CacheEditor.Components.TagTree
             }
         }
 
-        private void TreeViewItem_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
+		private void TreeViewItem_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
         {
             e.Handled = true;
         }
@@ -75,5 +100,6 @@ namespace CacheEditor.Components.TagTree
                 }
             }
         }
-    }
+
+	}
 }
