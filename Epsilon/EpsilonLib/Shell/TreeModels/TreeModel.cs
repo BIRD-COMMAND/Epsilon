@@ -14,8 +14,15 @@ namespace EpsilonLib.Shell.TreeModels
         private ICollection<ITreeNode> _nodes;
         private ITreeNode _selectedNode;
 
-        public event EventHandler<TreeNodeEventArgs> NodeDoubleClicked;
-        public event EventHandler<TreeNodeEventArgs> NodeSelected;
+		/// <summary>
+		/// Event fired when the node is <i><b>selected</b></i> (highlighted). This may be independed of <see cref="NodeActivated"/>.
+		/// </summary>
+		public event EventHandler<TreeNodeEventArgs> NodeSelected;
+		/// <summary>
+		/// Event fired when the node is <i><b>activated</b></i>.<br/>
+        /// Currently it is assumed that the node can only be activated while selected.
+		/// </summary>
+		public event EventHandler<TreeNodeEventArgs> NodeActivated;
 
         public ICollection<ITreeNode> Nodes
         {
@@ -62,27 +69,36 @@ namespace EpsilonLib.Shell.TreeModels
 
 
         #region ITreeEventSink Members
-        object ITreeViewEventSink.Source { get; set; }
-        void ITreeViewEventSink.NodeDoubleClicked(TreeNodeEventArgs e)
-        {
-            //OnNodeDoubleClicked(e);
-        }
-        void ITreeViewEventSink.NodeSelected(TreeNodeEventArgs e) => OnNodeSelected(e);
-        #endregion
 
-        protected virtual void OnNodeDoubleClicked(TreeNodeEventArgs e)  => NodeDoubleClicked?.Invoke(this, e);
-        protected virtual void OnNodeSelected(TreeNodeEventArgs e)
+        object ITreeViewEventSink.Source { get; set; }
+        
+		void ITreeViewEventSink.NodeMouseActionAttempted(TreeNodeEventArgs e) {
+            if (SelectedNode != null && SelectedNode == e.Node) { OnNodeActivated(e); }
+		}
+
+		void ITreeViewEventSink.NodeSelected(TreeNodeEventArgs e) {
+			OnNodeSelected(e);
+		}
+
+        void ITreeViewEventSink.NodeKeyDown(TreeNodeEventArgs e) {
+			if (SelectedNode == null || e.Node == null || ( SelectedNode != e.Node )) { return; }
+			if (e.Key == Key.Enter) { OnNodeActivated(e); }
+		}
+
+		#endregion
+
+		protected virtual void OnNodeSelected(TreeNodeEventArgs e)
         {
             SelectedNode = e.Node;
             NodeSelected?.Invoke(this, e);
-
-            if (Mouse.RightButton != MouseButtonState.Pressed)
-                NodeDoubleClicked?.Invoke(this, e);
         }
 
-        public void SimulateDoubleClick(TreeNodeEventArgs e)
-        {
-            NodeDoubleClicked?.Invoke(this, e);
-        }
-    }
+		protected virtual void OnNodeActivated(TreeNodeEventArgs e) {
+            if (SelectedNode != null && SelectedNode != e.Node) { 
+                OnNodeSelected(e); 
+            }
+			NodeActivated?.Invoke(this, e);
+		}
+
+	}
 }

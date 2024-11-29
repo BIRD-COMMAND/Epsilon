@@ -24,27 +24,18 @@ namespace CacheEditor.Components.TagTree
             Loaded += TagTreeView_Loaded;
 
             SearchBox.KeyDown += TreeView_SearchBox_HandleSpecialKeys;
-            SearchBox.LostFocus += TreeView_SearchBox_LostFocus;
 
 			EventManager.RegisterClassHandler(typeof(Window), Window.PreviewKeyUpEvent, new KeyEventHandler(TagTreeWindowKeyUp));
         }
 
         #region Automatic selection of the first item in the tree view when the TAB key is pressed
 
-        private bool _autoSelectedFirstItem = false;
-
 		private void TreeView_SearchBox_HandleSpecialKeys(object sender, KeyEventArgs e) {
 			// If SearchBox has focus and the TAB key has been pressed, try to focus the first item in the tree view.
 			if (e.Key == Key.Tab && (TagTree?.Items?.Count ?? 0) > 0) {
 				_ = ( (TreeViewItem)TagTree.ItemContainerGenerator.ContainerFromIndex(0) )?.Focus();
                 e.Handled = true;
-			    _autoSelectedFirstItem = true;
 			}
-		}
-
-		private void TreeView_SearchBox_LostFocus(object sender, RoutedEventArgs e) {
-			// Reset the flag when the SearchBox loses focus.
-			_autoSelectedFirstItem = false;
 		}
 
         #endregion

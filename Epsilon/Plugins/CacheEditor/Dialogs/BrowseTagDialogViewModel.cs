@@ -12,11 +12,11 @@ namespace CacheEditor
         public BrowseTagDialogViewModel(ICacheEditingService cacheEditingService, ICacheFile cacheFile)
         {
             TagTree = new TagTreeViewModel(cacheEditingService, cacheFile);
-            TagTree.NodeDoubleClicked += TagTree_NodeDoubleClicked;
+            TagTree.NodeActivated += TagTree_NodeActivated;
             DisplayName = "Tag Browser";
         }
 
-        private void TagTree_NodeDoubleClicked(object sender, TreeNodeEventArgs e)
+        private void TagTree_NodeActivated(object sender, TreeNodeEventArgs e)
         {
             if(e.Node.Tag is CachedTag)
                 RequestClose(true);

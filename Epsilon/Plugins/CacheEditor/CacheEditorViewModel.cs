@@ -53,7 +53,7 @@ namespace CacheEditor
             DisplayName = _cacheFile.File.Name;
             TagTree = new TagTreeViewModel(_cacheEditingService, _cacheFile, new TagEditing.TagExtract(_shell));
             TagTree.ContextMenu = Components.TagExplorer.MenuDefinitions.ContextMenu;
-            TagTree.NodeDoubleClicked += TagTree_ItemDoubleClicked;
+            TagTree.NodeActivated += TagTree_ItemAttemptOpen;
             CloseCommand = new DelegateCommand(Close);
         }
 
@@ -73,52 +73,59 @@ namespace CacheEditor
             get => _activeLayoutItem;
             set
             {
-                if (ReferenceEquals(_activeLayoutItem, value))
-                    return;
+                if (ReferenceEquals(_activeLayoutItem, value)) {
+					return;
+				}
 
-                _activeLayoutItem = value;
+				_activeLayoutItem = value;
 
-                if (!(value is ICacheEditorTool))
-                    ActivateItem((IScreen)value);
+                if (!(value is ICacheEditorTool)) {
+					ActivateItem((IScreen)value);
+				}
 
-                if(value is TagEditorViewModel)
-                    CurrentTagChanged?.Invoke(this, EventArgs.Empty);
+				if (value is TagEditorViewModel) {
+					CurrentTagChanged?.Invoke(this, EventArgs.Empty);
+				}
 
-                if(value is TagEditorViewModel)
-                    Logger.ActiveTag = (value as TagEditorViewModel).Tag;
+				if (value is TagEditorViewModel) {
+					Logger.ActiveTag = (value as TagEditorViewModel).Tag;
+				}
 
-                NotifyOfPropertyChange();
+				NotifyOfPropertyChange();
             }
         }
 
         public override void ActivateItem(IScreen item)
         {
-            if (item != null && item.ScreenState == ScreenState.Closed)
-                return;
+            if (item != null && item.ScreenState == ScreenState.Closed) {
+				return;
+			}
 
-            ActiveLayoutItem = item;
+			ActiveLayoutItem = item;
 
             base.ActivateItem(item);
         }
 
-        private void TagTree_ItemDoubleClicked(object sender, TreeNodeEventArgs e)
+        private void TagTree_ItemAttemptOpen(object sender, TreeNodeEventArgs e)
         {
-            if (e.Node.Tag is CachedTag instance)
-                OpenTag(instance);
-        }
+            if (e.Node.Tag is CachedTag instance) {
+				OpenTag(instance);
+			}
+		}
 
         private void OpenTag(CachedTag instance)
         {
-            using (var progress = _shell.CreateProgressScope())
+            using (IProgressReporter progress = _shell.CreateProgressScope())
             {
                 progress.Report($"Deserializing Tag '{instance}'...");
-                var futureDefinitionData = Task.Run(() =>
+				Task<object> futureDefinitionData = Task.Run(() =>
                 {
-                    using (var stream = CacheFile.Cache.OpenCacheRead())
-                        return CacheFile.Cache.Deserialize(stream, instance);
-                });
+                    using (Stream stream = CacheFile.Cache.OpenCacheRead()) {
+						return CacheFile.Cache.Deserialize(stream, instance);
+					}
+				});
 
-                var context = new TagEditorContext()
+				TagEditorContext context = new TagEditorContext()
                 {
                     CacheEditor = this,
                     DefinitionData = futureDefinitionData,
@@ -133,10 +140,11 @@ namespace CacheEditor
         public List<string> GetOpenTagNames()
         {
             List<string> names = new List<string>();
-            foreach(var item in Documents)
-                names.Add(item.ToString());
+            foreach(IScreen item in Documents) {
+				names.Add(item.ToString());
+			}
 
-            return names;
+			return names;
         }
 
         protected override void OnInitialActivate()
@@ -147,16 +155,18 @@ namespace CacheEditor
 
         private void CreateAndShowTools()
         {
-            foreach (var toolFactory in _cacheEditingService.Tools)
+            foreach (ICacheEditorToolProvider toolFactory in _cacheEditingService.Tools)
             {
-                if (!toolFactory.ValidForEditor(this))
-                    continue;
+                if (!toolFactory.ValidForEditor(this)) {
+					continue;
+				}
 
-                var tool = toolFactory.CreateTool(this);
+				ICacheEditorTool tool = toolFactory.CreateTool(this);
                 Tools.Add(tool);
-                if (tool.IsVisible)
-                    ShowTool(tool, false);
-            }
+                if (tool.IsVisible) {
+					ShowTool(tool, false);
+				}
+			}
         }
 
         private void CacheFile_Reloaded(object sender, System.EventArgs e)
@@ -180,7 +190,7 @@ namespace CacheEditor
         protected override void OnClose()
         {
             base.OnClose();
-            TagTree.NodeDoubleClicked -= TagTree_ItemDoubleClicked;
+            TagTree.NodeActivated -= TagTree_ItemAttemptOpen;
             TagTree?.Dispose();
             TagTree = null;
             _shell = null;
@@ -194,13 +204,17 @@ namespace CacheEditor
 
         private void CloseAllPanes()
         {
-            foreach (var tool in Tools)
-                tool.Close();
-            Tools.Clear();
+            foreach (ICacheEditorTool tool in Tools) {
+				tool.Close();
+			}
 
-            foreach (var document in Documents)
-                document.Close();
-            Documents.Clear();
+			Tools.Clear();
+
+            foreach (IScreen document in Documents) {
+				document.Close();
+			}
+
+			Documents.Clear();
         }
 
         public void Close()
@@ -210,10 +224,11 @@ namespace CacheEditor
 
         private void ShowTool(ICacheEditorTool tool, bool activate = false)
         {
-            if (!Tools.Contains(tool))
-                Tools.Add(tool);
+            if (!Tools.Contains(tool)) {
+				Tools.Add(tool);
+			}
 
-            tool.Show(true, activate);
+			tool.Show(true, activate);
         }
 
         public ICacheEditorTool GetTool(string name)
@@ -227,7 +242,7 @@ namespace CacheEditor
 
         CachedTag ICacheEditor.RunBrowseTagDialog()
         {
-            var vm = new BrowseTagDialogViewModel(_cacheEditingService, _cacheFile);
+			BrowseTagDialogViewModel vm = new BrowseTagDialogViewModel(_cacheEditingService, _cacheFile);
             if (_shell.ShowDialog(vm) == true)
             {
                 return vm.TagTree.SelectedNode.Tag as CachedTag;
@@ -254,9 +269,10 @@ namespace CacheEditor
 
         void ICommandHandler<OpenTagCommand>.ExecuteCommand(Command command)
         {
-            if (TagTree.SelectedNode?.Tag is CachedTag instance)
-                OpenTag(instance);
-        }
+            if (TagTree.SelectedNode?.Tag is CachedTag instance) {
+				OpenTag(instance);
+			}
+		}
 
         void ICacheEditor.OpenTag(CachedTag tag)
         {
@@ -273,7 +289,7 @@ namespace CacheEditor
         {
             if (TagTree.SelectedNode?.Tag is CachedTag tag)
             {
-                var vm = new NameTagDialogViewModel()
+				NameTagDialogViewModel vm = new NameTagDialogViewModel()
                 {
                     DisplayName = "Rename Tag",
                     Message = "Enter a new name for this tag:",
@@ -282,10 +298,11 @@ namespace CacheEditor
 
                 if (_shell.ShowDialog(vm) == true)
                 {
-                    if (!BaseCacheModifyCheck(_cacheFile.Cache))
-                        return;
+                    if (!BaseCacheModifyCheck(_cacheFile.Cache)) {
+						return;
+					}
 
-                    Logger.LogCommand(null, null, Logger.CommandEvent.CommandType.none, $"nametag {tag.Name}.{tag.Group} {vm.InputText}");
+					Logger.LogCommand(null, null, Logger.CommandEvent.CommandType.none, $"nametag {tag.Name}.{tag.Group} {vm.InputText}");
                     _cacheFile.RenameTag(tag, vm.InputText);
                     TagTree.Refresh(true);
                 }
@@ -301,13 +318,13 @@ namespace CacheEditor
         {
             if (TagTree.SelectedNode?.Tag is CachedTag tag)
             {
-                var ofd = new SaveFileDialog();
+				SaveFileDialog ofd = new SaveFileDialog();
                 ofd.FileName = $"{Path.GetFileName(tag.Name)}.{tag.Group}";
                 if(ofd.ShowDialog() == true)
                 {
                     _cacheFile.ExtractTag(tag, ofd.FileName);
 
-                    var success = new AlertDialogViewModel
+					AlertDialogViewModel success = new AlertDialogViewModel
                     {
                         AlertType = Alert.Success,
                         Message = "Tag extracted successfully."
@@ -327,13 +344,13 @@ namespace CacheEditor
         {
             if (TagTree.SelectedNode?.Tag is CachedTag tag)
             {
-                var ofd = new OpenFileDialog();
+				OpenFileDialog ofd = new OpenFileDialog();
                 ofd.FileName = $"{Path.GetFileName(tag.Name)}.{tag.Group}";
                 if (ofd.ShowDialog() == true)
                 {
                     _cacheFile.ImportTag(tag, ofd.FileName);
 
-                    var success = new AlertDialogViewModel
+					AlertDialogViewModel success = new AlertDialogViewModel
                     {
                         AlertType = Alert.Success,
                         Message = "Tag imported successfully."
@@ -353,17 +370,18 @@ namespace CacheEditor
         {
             if (TagTree.SelectedNode?.Tag is CachedTag tag)
             {
-                var vm = new NameTagDialogViewModel();
+				NameTagDialogViewModel vm = new NameTagDialogViewModel();
                 vm.DisplayName = "Duplicate Tag";
                 vm.Message = "Enter a name for the duplicate:";
                 vm.InputText = tag.Name;
 
                 if (_shell.ShowDialog(vm) == true)
                 {
-                    if (!BaseCacheModifyCheck(_cacheFile.Cache))
-                        return;
+                    if (!BaseCacheModifyCheck(_cacheFile.Cache)) {
+						return;
+					}
 
-                    _cacheFile.DuplicateTag(tag, vm.InputText);
+					_cacheFile.DuplicateTag(tag, vm.InputText);
                     TagTree.Refresh(true);
                     Logger.LogCommand(null, null, Logger.CommandEvent.CommandType.none, $"duplicatetag {tag.Name}.{tag.Group} {vm.InputText}");
                 }
@@ -379,10 +397,11 @@ namespace CacheEditor
         {
             if (TagTree.SelectedNode?.Tag is CachedTag tag)
             {
-                if (!BaseCacheModifyCheck(_cacheFile.Cache))
-                    return;
+                if (!BaseCacheModifyCheck(_cacheFile.Cache)) {
+					return;
+				}
 
-                var warning = new AlertDialogViewModel
+				AlertDialogViewModel warning = new AlertDialogViewModel
                 {
                     AlertType = Alert.Warning,
                     Message = $"Are you sure you want to delete '{Path.GetFileName(tag.Name)}.{tag.Group}'?"
@@ -401,9 +420,9 @@ namespace CacheEditor
         {
             if(ActiveItem is ITagEditorPluginClient tagEditor)
             {
-                using (var stream = CacheFile.Cache.OpenCacheRead())
+                using (Stream stream = CacheFile.Cache.OpenCacheRead())
                 {
-                    var data = CacheFile.Cache.Deserialize(stream, CurrentTag);
+					object data = CacheFile.Cache.Deserialize(stream, CurrentTag);
                     tagEditor.PostMessage(this, new DefinitionDataChangedEvent(data));
                 }
             }
@@ -413,25 +432,29 @@ namespace CacheEditor
         {
             bool warningsEnabled = _cacheEditingService.Settings.Get<bool>(Components.TagTree.Settings.BaseCacheWarningsSetting);
 
-            if (!warningsEnabled)
-                return true;
+            if (!warningsEnabled) {
+				return true;
+			}
 
-            if (cache is GameCacheHaloOnlineBase && !(_cacheFile.Cache is GameCacheModPackage))
+			if (cache is GameCacheHaloOnlineBase && !(_cacheFile.Cache is GameCacheModPackage))
             {
-                var alert = new AlertDialogViewModel
+				AlertDialogViewModel alert = new AlertDialogViewModel
                 {
                     AlertType = Alert.Warning,
                     Message = "This action will modify your base cache. Are you sure you want to proceed?"
                 };
 
-                if (_shell.ShowDialog(alert) == true)
-                    return true;
-                else
-                    return false;
-            }
-            else
-                return true;
-        }
+                if (_shell.ShowDialog(alert) == true) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+            else {
+				return true;
+			}
+		}
 
 
         public MessageBox asdfj;

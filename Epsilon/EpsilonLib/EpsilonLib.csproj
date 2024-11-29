@@ -78,7 +78,6 @@
     <Compile Include="Themes\ColorHintConverter.cs" />
     <Compile Include="Utils\DispatcherEx.cs" />
     <Compile Include="Core\ExplicitViewAttribute.cs" />
-    <Compile Include="Shell\TreeModels\ITreeEventSink.cs" />
     <Compile Include="Shell\TreeModels\ITreeNode.cs" />
     <Compile Include="Shell\TreeModels\StandardTreeNode.cs" />
     <Compile Include="Shell\TreeModels\TreeModel.cs" />
@@ -197,7 +196,7 @@
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <Target Name="PreBuild" BeforeTargets="Build">
+  <Target Name="PreBuild" BeforeTargets="Build">
     <ItemGroup>
       <Physics Include="$(SolutionDir)..\TagTool\TagTool\bin\x64\$(ConfigurationName)\Physics\**\*" />
       <Tools Include="$(SolutionDir)..\TagTool\TagTool\bin\x64\$(ConfigurationName)\Tools\**\*" />
