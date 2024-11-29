@@ -18,15 +18,18 @@ namespace TagStructEditor.Fields
         private bool _isExpanded = true;
         private static ObservableNonGenericCollection CopiedBlocks = new ObservableNonGenericCollection();
         private static Type CopiedBlockType;
-        private bool CanPaste = false;
+        private bool GetCanPaste() { 
+            return 
+                Block != null &&
+                !IsFixedSize &&
+				CopiedBlockType != null && 
+                (CopiedBlocks?.Count ?? 0) > 0 && 
+                CopiedBlockType == ElementType;
+		}
 
         public BlockField(Type elementType, ValueFieldInfo info) : base(info)
         {
             ElementType = elementType;
-            CanPaste = CopiedBlockType != null 
-                && CopiedBlocks.Count > 0 
-                && CopiedBlockType == ElementType;
-
             Block = new ObservableNonGenericCollection();
             Block.CollectionChanged += Block_CollectionChanged;
             AddCommand = new DelegateCommand(Add, () => !IsFixedSize);
@@ -42,7 +45,7 @@ namespace TagStructEditor.Fields
 
             CopyBlockCommand = new DelegateCommand(CopyBlock, () => CurrentElementValid && !IsFixedSize);
             CopyRangeCommand = new DelegateCommand(CopyRange, () => CurrentElementValid && !IsFixedSize);
-            PasteBlocksAtEndCommand = new DelegateCommand(PasteBlocks, () => Block != null && !IsFixedSize && CanPaste);
+            PasteBlocksAtEndCommand = new DelegateCommand(PasteBlocks, GetCanPaste);
         }
 
 
@@ -70,15 +73,15 @@ namespace TagStructEditor.Fields
 
         public bool IsExpanded
         {
-            // only show as expanded if there is any element to display
-            get => _isExpanded && CurrentElementValid;
+			// only show as expanded if there is any element to display
+			get => _isExpanded && CurrentElementValid;
             set
             {
                 _isExpanded = value;
             }
-        }
+		}
 
-        public override void Accept(IFieldVisitor visitor)
+		public override void Accept(IFieldVisitor visitor)
         {
              visitor.Visit(this);
         }
@@ -184,7 +187,6 @@ namespace TagStructEditor.Fields
             CopiedBlocks.Clear();
             CopiedBlocks.Add(Block[CurrentIndex].DeepCloneV2());
             CopiedBlockType = ElementType;
-            CanPaste = true;
             PasteBlocksAtEndCommand.RaiseCanExecuteChanged();
         }
 
@@ -208,7 +210,6 @@ namespace TagStructEditor.Fields
             }
 
             CopiedBlockType = ElementType;
-            CanPaste = true;
             PasteBlocksAtEndCommand.RaiseCanExecuteChanged();
         }
 
@@ -267,24 +268,32 @@ namespace TagStructEditor.Fields
 
         protected override void OnPopulateContextMenu(EMenu menu)
         {
+            #pragma warning disable IDE0058 // Expression value is never used
+			
             menu.Group("TagBlock10")
                 .Add("Go To Index", tooltip: "", command: GotoIndexCommand);
-            menu.Group("TagBlock1")
+
+			menu.Group("TagBlock1")
                 .Add("Add", tooltip: "Add a new element", command: AddCommand)
                 .Add("Insert", tooltip: "Insert a new element at the current index", command: InsertCommand)
                 .Add("Delete", tooltip: "Delete the element at the current index", command: DeleteCommand)
                 .Add("Duplicate", tooltip: "Duplicate the element at the current index", command: DuplicateCommand);
+
             menu.Group("TagBlock2")
                 .Add("Shift Up", tooltip: "Shift the current element up one", command: ShiftUpCommand)
                 .Add("Shift Down", tooltip: "Shift the current element down one", command: ShiftDownCommand)
                 .Add("Delete All", tooltip: "Delete all elements", command: DeleteAllCommand);
+
             menu.Group("TagBlock3")
                 .Add("Copy Block", tooltip: "Copies a single block", command: CopyBlockCommand)
                 .Add("Copy Range...", tooltip: "Copies the entire set of blocks (for now)", command: CopyRangeCommand)
                 .Add("Paste Blocks At End", tooltip: "Append copied blocks to the end of the list", command: PasteBlocksAtEndCommand);
+
             menu.Group("TagBlock4")
                 .Add("Collapse All", tooltip: "Collapse all children", command: CollapseAllCommand)
                 .Add("Expand All", tooltip: "Expand all children", command: ExpandAllCommand);
+
+            #pragma warning restore IDE0058 // Expression value is never used
         }
         public override void Dispose()
         {
