@@ -32,24 +32,39 @@ namespace ModPackagePlugin
             _editingService = editingService;
         }
 
-        public async Task OpenFileAsync(IShell shell, string fileName)
+        public async Task OpenFileAsync(IShell shell, params string[] paths)
         {
-            var file = new FileInfo(fileName);
-            FileInfo baseCacheFile = new FileInfo(Path.Combine(file.Directory.FullName, "..\\maps\\tags.dat"));
-            if (!baseCacheFile.Exists)
+
+            string modPath = null, modCachePath = null;
+
+            if (paths == null || paths.Length == 0) { 
+                throw new ArgumentException($"{nameof(ModPackageEditorProvider)}.{nameof(OpenFileAsync)} requires at least one valid file path."); 
+            }
+            else { 
+                modPath = paths[0]; 
+                if (paths.Length > 1) { modCachePath = paths[1]; }
+            }
+
+			FileInfo modFileInfo = new FileInfo(modPath);
+
+            FileInfo modCacheFileInfo;
+            if (string.IsNullOrEmpty(modCachePath)) { modCacheFileInfo = new FileInfo(Path.Combine(modFileInfo.Directory.FullName, "..\\maps\\tags.dat")); }
+            else { modCacheFileInfo = new FileInfo(modCachePath); }
+
+            if (!modCacheFileInfo.Exists)
             {
-                if (!FileDialogs.RunBrowseCacheDialog(out baseCacheFile))
+                if (!FileDialogs.RunBrowseCacheDialog(out modCacheFileInfo))
                     return;
             }
 
-            if (!file.Exists)
+            if (!modFileInfo.Exists)
             {
-                var alert = new AlertDialogViewModel
+				AlertDialogViewModel alert = new AlertDialogViewModel
                 {
                     AlertType = Alert.Error,
                     DisplayName = "File Not Found",
                     Message = $"Mod package not found at this location:",
-                    SubMessage = fileName
+                    SubMessage = modPath
                 };
                 shell.ShowDialog(alert);
 
@@ -58,17 +73,17 @@ namespace ModPackagePlugin
 
             try
             {
-                var cache = await Task.Run(() => new GameCacheModPackage((GameCacheHaloOnlineBase)GameCache.Open(baseCacheFile), file));
-                shell.ActiveDocument = (IScreen)_editingService.CreateEditor(new ModPackageCacheFile(file, cache));
+				GameCacheModPackage cache = await Task.Run(() => new GameCacheModPackage((GameCacheHaloOnlineBase)GameCache.Open(modCacheFileInfo), modFileInfo));
+                shell.ActiveDocument = (IScreen)_editingService.CreateEditor(new ModPackageCacheFile(modFileInfo, cache));
             }
             catch
             {
-                var alert = new AlertDialogViewModel
+				AlertDialogViewModel alert = new AlertDialogViewModel
                 {
                     AlertType = Alert.Error,
                     DisplayName = "Failed to Open",
                     Message = $"An error occurred while opening this mod package; it may be incompatible or corrupted.",
-                    SubMessage = fileName
+                    SubMessage = modPath
                 };
                 shell.ShowDialog(alert);
 

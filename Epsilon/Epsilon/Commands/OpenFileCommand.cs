@@ -76,7 +76,7 @@ namespace Epsilon.Commands
 
             try
             {
-                await _editorService.OpenFileWithEditorAsync(dialog.FileName, editorProvider.Id);
+                await _editorService.OpenFileWithEditorAsync(editorProvider.Id, dialog.FileName);
             }
             catch(Exception ex)
             {

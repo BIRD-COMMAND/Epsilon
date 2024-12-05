@@ -29,7 +29,11 @@ namespace Epsilon.Options
                     textBlock = DefaultModPackageTextBlock;
                     filter = "Mod Package (*.pak)|*.pak";
                     break;
-                default:
+                case "DefaultModPackageCacheButton":
+					textBlock = DefaultModCacheTextBlock;
+					filter = "Mod Package Cache (*.dat)|*.dat";
+					break;
+				default:
                     break;
             }
 
@@ -60,7 +64,10 @@ namespace Epsilon.Options
                 case "DefaultPakClear":
                     textBlock = DefaultModPackageTextBlock;
                     break;
-                default:
+				case "DefaultModCacheClear":
+					textBlock = DefaultModCacheTextBlock;
+					break;
+				default:
                     break;
             }
 

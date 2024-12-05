@@ -28,9 +28,13 @@ namespace CacheEditor
             _editingService = editingService;
         }
 
-        async Task IEditorProvider.OpenFileAsync(IShell shell, string fileName)
+        async Task IEditorProvider.OpenFileAsync(IShell shell, params string[] paths)
         {
-            var file = new FileInfo(fileName);
+            if (paths == null || paths.Length != 1) { 
+                throw new ArgumentException($"{nameof(CacheEditorProvider)} requires exactly one file path"); 
+            }
+            var fileName = paths[0];
+			var file = new FileInfo(fileName);
 
             if(!file.Exists)
             {

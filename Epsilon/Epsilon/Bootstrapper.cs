@@ -1,4 +1,5 @@
 ﻿using Epsilon;
+using Epsilon.Options;
 using Epsilon.Pages;
 using EpsilonLib.Commands;
 using EpsilonLib.Editors;
@@ -17,149 +18,150 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 
 namespace WpfApp20
 {
-    public class Bootstrapper : MefBootstrapper<ShellViewModel>
-    {
-        private FileHistoryService _fileHistory;
-        private IEditorService _editorService;
-        private ISettingsCollection _settings;
-        private string DefaultCachePath;
-        private string DefaultPakPath;
-        private double StartupPositionLeft;
-        private double StartupPositionTop;
-        private double StartupWidth;
-        private double StartupHeight;
-        private bool AlwaysOnTop;
-        private string AccentColor;
+	public class Bootstrapper : MefBootstrapper<ShellViewModel>
+	{
+		private FileHistoryService _fileHistory;
+		private IEditorService _editorService;
+		private ISettingsCollection _settings;
+		private string DefaultCachePath;
+		private string DefaultPakPath;
+		private string DefaultPakCachePath;
+		private double StartupPositionLeft;
+		private double StartupPositionTop;
+		private double StartupWidth;
+		private double StartupHeight;
+		private bool AlwaysOnTop;
+		private string AccentColor;
 
-        protected async override void Launch()
-        {
-            RegisterAdditionalLoggers();
+		protected async override void Launch() {
+			RegisterAdditionalLoggers();
 
-            var startupTasks = new List<Task>();
-            startupTasks.Add(_fileHistory.InitAsync());
+			List<Task> startupTasks = new List<Task>();
+			startupTasks.Add(_fileHistory.InitAsync());
 
-            PrepareResources();
+			PrepareResources();
 
-            await Task.WhenAll(startupTasks);
+			await Task.WhenAll(startupTasks);
 
-            App.Current.DispatcherUnhandledException += (o, args) =>
-            {
-                var dialog = new ExceptionDialog(args.Exception);
-                dialog.Owner = App.Current.MainWindow;
-                dialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                if(dialog.ShowDialog() == false)
-                    args.Handled = true;
-            };
+			App.Current.DispatcherUnhandledException += UnhandledExceptionDisplay;
 
-            var providers = _editorService.EditorProviders.ToList();
+			List<IEditorProvider> providers = _editorService.EditorProviders.ToList();
 
-            FrameworkCompatibilityPreferences.KeepTextBoxDisplaySynchronizedWithTextProperty = false;
+			FrameworkCompatibilityPreferences.KeepTextBoxDisplaySynchronizedWithTextProperty = false;
 
-            base.Launch();
+			base.Launch();
 
-            PostLaunchInitShell();
+			PostLaunchInitShell();
 
-            await OpenDefault(DefaultCachePath, providers.ElementAt(0));
-            await OpenDefault(DefaultPakPath, providers.ElementAt(1));
-        }
+			await OpenDefault(providers.ElementAt(0), DefaultCachePath);
+			await OpenDefault(providers.ElementAt(1), DefaultPakPath, DefaultPakCachePath);
+		}
 
-        private void RegisterAdditionalLoggers()
-        {
-            foreach (var logger in GetInstances<ILogHandler>())
-                Logger.RegisterLogger(logger);
-        }
+		private void RegisterAdditionalLoggers() {
+			foreach (ILogHandler logger in GetInstances<ILogHandler>()) {
+				Logger.RegisterLogger(logger);
+			}
+		}
+		
+		private void UnhandledExceptionDisplay(object sender, DispatcherUnhandledExceptionEventArgs args) {
+			ExceptionDialog dialog = new ExceptionDialog(args.Exception);
+			dialog.Owner = App.Current.MainWindow;
+			dialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+			if (dialog.ShowDialog() == false) {
+				args.Handled = true;
+			}
+		}
 
-        protected override void ConfigureIoC(CompositionBatch batch)
-        {
-            base.ConfigureIoC(batch);
+		protected override void ConfigureIoC(CompositionBatch batch) {
+			base.ConfigureIoC(batch);
 
-            _fileHistory = new FileHistoryService(new XmlFileHistoryStore("filehistory.xml"));
-            batch.AddExportedValue<IFileHistoryService>(_fileHistory);
-        }
+			_fileHistory = new FileHistoryService(new XmlFileHistoryStore("filehistory.xml"));
+			batch.AddExportedValue<IFileHistoryService>(_fileHistory);
+		}
 
-        protected override IEnumerable<Assembly> GetAssemblies()
-        {
-            var pluginManager = new PluginLoader();
-            pluginManager.LoadPlugins();
+		protected override IEnumerable<Assembly> GetAssemblies() {
+			PluginLoader pluginManager = new PluginLoader();
+			pluginManager.LoadPlugins();
 
-            yield return Assembly.GetExecutingAssembly();
-            yield return (typeof(IShell).Assembly); // EpsilonLib
+			yield return Assembly.GetExecutingAssembly();
+			yield return ( typeof(IShell).Assembly ); // EpsilonLib
 
-            foreach (var file in pluginManager.Plugins)
-                yield return file.Assembly;
-        }
+			foreach (Host.PluginInfo file in pluginManager.Plugins) {
+				yield return file.Assembly;
+			}
+		}
 
-        private void PrepareResources()
-        {
-            foreach (var dict in GetInstances<ResourceDictionary>())
-                App.Current.Resources.MergedDictionaries.Add(dict);
+		private void PrepareResources() {
+			foreach (ResourceDictionary dict in GetInstances<ResourceDictionary>()) {
+				App.Current.Resources.MergedDictionaries.Add(dict);
+			}
 
-            _editorService = GetInstance<IEditorService>();
-            _settings = GetInstance<ISettingsService>().GetCollection("General");
-            DefaultCachePath = _settings.Get("DefaultTagCache", "");
-            DefaultPakPath = _settings.Get("DefaultModPackage", "");
-            AlwaysOnTop = _settings.Get("AlwaysOnTop", false);
-            AccentColor = _settings.Get("AccentColor", "#007ACC");
+			_editorService = GetInstance<IEditorService>();
+			_settings = GetInstance<ISettingsService>().GetCollection(GeneralSettings.CollectionKey);
+			DefaultCachePath = _settings.Get(GeneralSettings.DefaultTagCache);
+			DefaultPakPath = _settings.Get(GeneralSettings.DefaultPak);
+			DefaultPakCachePath = _settings.Get(GeneralSettings.DefaultPakCache);
+			AlwaysOnTop = _settings.GetBool(GeneralSettings.AlwaysOnTop);
+			AccentColor = _settings.Get(GeneralSettings.AccentColor);
 
-            App.Current.Resources.Add(typeof(ICommandRegistry), GetInstance<ICommandRegistry>());
-            App.Current.Resources.Add(typeof(IMenuFactory), GetInstance<IMenuFactory>());
-            App.Current.Resources.Add(SystemParameters.MenuPopupAnimationKey, PopupAnimation.None);
-            App.Current.Resources["AlwaysOnTop"] = AlwaysOnTop;
-        }
+			App.Current.Resources.Add(typeof(ICommandRegistry), GetInstance<ICommandRegistry>());
+			App.Current.Resources.Add(typeof(IMenuFactory), GetInstance<IMenuFactory>());
+			App.Current.Resources.Add(SystemParameters.MenuPopupAnimationKey, PopupAnimation.None);
+			App.Current.Resources[GeneralSettings.AlwaysOnTop.Key] = AlwaysOnTop;
+		}
 
-        private void PostLaunchInitShell()
-        {
-            // better font rendering
-            TextOptions.TextFormattingModeProperty.OverrideMetadata(typeof(Window),
-               new FrameworkPropertyMetadata(TextFormattingMode.Display,
-               FrameworkPropertyMetadataOptions.AffectsMeasure |
-               FrameworkPropertyMetadataOptions.AffectsRender |
-               FrameworkPropertyMetadataOptions.Inherits));
+		private void PostLaunchInitShell() {
 
-            double.TryParse(_settings.Get("StartupPositionLeft", ""), out StartupPositionLeft);
-            double.TryParse(_settings.Get("StartupPositionTop", ""), out StartupPositionTop);
-            if (StartupPositionLeft != 0 && StartupPositionTop != 0)
-            {
-                App.Current.MainWindow.Left = StartupPositionLeft;
-                App.Current.MainWindow.Top = StartupPositionTop;
-            }
+			// better font rendering
 
-            double.TryParse(_settings.Get("StartupWidth", ""), out StartupWidth);
-            double.TryParse(_settings.Get("StartupHeight", ""), out StartupHeight);
-            if (StartupWidth > 281 && StartupHeight > 500)
-            {
-                App.Current.MainWindow.Width = StartupWidth;
-                App.Current.MainWindow.Height = StartupHeight;
-            }
+			TextOptions.TextFormattingModeProperty.OverrideMetadata(typeof(Window),
+			   new FrameworkPropertyMetadata(TextFormattingMode.Display,
+			   FrameworkPropertyMetadataOptions.AffectsMeasure |
+			   FrameworkPropertyMetadataOptions.AffectsRender |
+			   FrameworkPropertyMetadataOptions.Inherits));
+			
+			if (_settings.TryGetDouble(GeneralSettings.StartupPositionLeft, out StartupPositionLeft)
+			&&  _settings.TryGetDouble(GeneralSettings.StartupPositionTop,  out StartupPositionTop)) {
+				App.Current.MainWindow.Left = StartupPositionLeft;
+				App.Current.MainWindow.Top = StartupPositionTop;
+			}
 
-            InitAppearance();
-        }
+			StartupWidth = _settings.GetDouble(GeneralSettings.StartupWidth);
+			StartupHeight = _settings.GetDouble(GeneralSettings.StartupHeight);
+			if (StartupWidth > 281 && StartupHeight > 500) {
+				App.Current.MainWindow.Width = StartupWidth;
+				App.Current.MainWindow.Height = StartupHeight;
+			}
 
-        private async Task OpenDefault(string path, IEditorProvider editorProvider)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-                return;
+			InitAppearance();
+		}
 
-            if(File.Exists(path))
-                await _editorService.OpenFileWithEditorAsync(path, editorProvider.Id);
-            else
-                MessageBox.Show($"Startup cache or mod package could not be found at the following location:" + 
-                        $"\n\n{path}", "File Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
+		private async Task OpenDefault(IEditorProvider editorProvider, params string[] paths) {
+			if (paths == null || paths.Length == 0) { return; }
+			string path = paths[0];
+			if (string.IsNullOrWhiteSpace(path)) { return; }
+			else if (File.Exists(path)) {
+				if (paths.Length > 1) { await _editorService.OpenFileWithEditorAsync(editorProvider.Id, paths); }
+				else { await _editorService.OpenFileWithEditorAsync(editorProvider.Id, path); }
+			}
+			else {
+				MessageBox.Show($"Startup cache or mod package could not be found at the following location:" +
+						$"\n\n{path}", "File Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+		}
 
-        private void InitAppearance()
-        {
-            App.Current.Resources["AccentColor"] = (Color)ColorConverter.ConvertFromString(AccentColor);
+		private void InitAppearance() {
+			App.Current.Resources[GeneralSettings.AccentColor.Key] = (Color)ColorConverter.ConvertFromString(AccentColor);
 
-            var epsilonTheme = "Default";
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri("/Epsilon;component/Themes/" + epsilonTheme.ToString() + ".xaml", UriKind.Relative)
-            });
-        }
-    }
+			string epsilonTheme = "Default";
+			Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary {
+				Source = new Uri("/Epsilon;component/Themes/" + epsilonTheme.ToString() + ".xaml", UriKind.Relative)
+			});
+		}
+	}
 }

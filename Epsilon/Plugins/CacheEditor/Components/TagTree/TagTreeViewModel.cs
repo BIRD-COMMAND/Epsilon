@@ -56,13 +56,9 @@ namespace CacheEditor.Components.TagTree
 
         public TagTreeViewModel(ICacheEditingService cacheEditingService, ICacheFile cacheFile, TagExtract extraction = null)
         {
-            _viewMode = cacheEditingService.Settings.Get(
-                Settings.TagTreeViewModeSetting.Key, 
-                (TagTreeViewMode)Settings.TagTreeViewModeSetting.DefaultValue);
 
-            _groupDisplayMode = cacheEditingService.Settings.Get(
-                Settings.TagTreeGroupDisplaySetting.Key,
-                (TagTreeGroupDisplayMode)Settings.TagTreeGroupDisplaySetting.DefaultValue);
+            _viewMode = cacheEditingService.Settings.GetEnum<TagTreeViewMode>(Settings.TagTreeViewModeSetting);
+            _groupDisplayMode = cacheEditingService.Settings.GetEnum<TagTreeGroupDisplayMode>(Settings.TagTreeGroupDisplaySetting);
 
             _cacheEditingService = cacheEditingService;
             _cacheFile = cacheFile;
@@ -170,8 +166,7 @@ namespace CacheEditor.Components.TagTree
                     return new TagTreeFolderView();
                 case TagTreeViewMode.Groups:
                     {
-                        bool showAltNames = _cacheEditingService.Settings.Get(
-                            Settings.ShowTagGroupAltNamesSetting.Key, (bool)Settings.ShowTagGroupAltNamesSetting.DefaultValue);
+					    bool showAltNames = _cacheEditingService.Settings.GetBool(Settings.ShowTagGroupAltNamesSetting);
                         return new TagTreeGroupView(_groupDisplayMode, showAltNames);
                     }
                 default:

@@ -43,7 +43,6 @@
     <Compile Include="ColorConverters.cs" />
     <Compile Include="EnumBindingSource.cs" />
     <Compile Include="IFieldsValueChangeSink.cs" />
-    <Compile Include="Settings.cs" />
     <Page Include="Options\OptionsPageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

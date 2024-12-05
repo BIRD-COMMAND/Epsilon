@@ -11,7 +11,8 @@ namespace EpsilonLib.Settings
     class SettingsService : ISettingsService
     {
         private const string FilePath = "settings.json";
-        private SettingsCollection _rootCollection;
+        private const string SettingsVersionKey = "SettingsVersion";
+		private SettingsCollection _rootCollection;
 
         public event EventHandler<SettingChangedEventArgs> SettingChanged;
 
@@ -38,12 +39,21 @@ namespace EpsilonLib.Settings
             if (!File.Exists(filePath))
                 return;
 
-            using (JsonReader reader = new JsonTextReader(File.OpenText(filePath)))
+			using (JsonReader reader = new JsonTextReader(File.OpenText(filePath)))
             {
                 reader.Read();
                 _rootCollection = new SettingsCollection(this, JObject.ReadFrom(reader));
             }
-        }
+
+			// 12/05/24 Breaking change to how settings are stored
+			// If the Version key is not present we need to wipe the existing settings
+			if (_rootCollection.Node[SettingsVersionKey] == null) {
+				_rootCollection.Node.RemoveAll();               // Clear all existing data
+				_rootCollection.Node[SettingsVersionKey] = 2;   // Record the update to V2
+				Save(filePath);                                 // Save the changes
+			}
+
+		}
 
         private void Save(string filePath)
         {

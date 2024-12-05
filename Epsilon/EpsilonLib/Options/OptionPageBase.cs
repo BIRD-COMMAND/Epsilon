@@ -54,6 +54,8 @@ namespace EpsilonLib.Options
 
         public abstract void Apply();
 
+        public abstract void Save();
+
         public abstract void Load();
     }
 }

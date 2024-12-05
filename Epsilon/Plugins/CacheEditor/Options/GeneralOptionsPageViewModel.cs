@@ -45,20 +45,22 @@ namespace CacheEditor.Options
             set => SetOptionAndNotify(ref _baseCacheWarnings, value);
         }
 
-        public override void Apply()
+        public override void Save() { Apply(); }
+
+		public override void Apply()
         {
-            _settings.Set(Components.TagTree.Settings.TagTreeViewModeSetting.Key, TagTreeViewMode);
-            _settings.Set(Components.TagTree.Settings.TagTreeGroupDisplaySetting.Key, TagTreeGroupDisplayMode);
-            _settings.Set(Components.TagTree.Settings.ShowTagGroupAltNamesSetting.Key, ShowTagGroupAltNames);
-            _settings.Set(Components.TagTree.Settings.BaseCacheWarningsSetting.Key, BaseCacheWarnings);
+            _settings.SetEnum(Components.TagTree.Settings.TagTreeViewModeSetting.Key, TagTreeViewMode);
+            _settings.SetEnum(Components.TagTree.Settings.TagTreeGroupDisplaySetting.Key, TagTreeGroupDisplayMode);
+            _settings.SetBool(Components.TagTree.Settings.ShowTagGroupAltNamesSetting.Key, ShowTagGroupAltNames);
+            _settings.SetBool(Components.TagTree.Settings.BaseCacheWarningsSetting.Key, BaseCacheWarnings);
         }
 
         public override void Load()
         {
-            TagTreeViewMode = _settings.Get<TagTreeViewMode>(Components.TagTree.Settings.TagTreeViewModeSetting);
-            TagTreeGroupDisplayMode = _settings.Get<TagTreeGroupDisplayMode>(Components.TagTree.Settings.TagTreeGroupDisplaySetting);
-            ShowTagGroupAltNames = _settings.Get<bool>(Components.TagTree.Settings.ShowTagGroupAltNamesSetting);
-            BaseCacheWarnings = _settings.Get<bool>(Components.TagTree.Settings.BaseCacheWarningsSetting);
+            TagTreeViewMode = _settings.GetEnum<TagTreeViewMode>(Components.TagTree.Settings.TagTreeViewModeSetting);
+            TagTreeGroupDisplayMode = _settings.GetEnum<TagTreeGroupDisplayMode>(Components.TagTree.Settings.TagTreeGroupDisplaySetting);
+            ShowTagGroupAltNames = _settings.GetBool(Components.TagTree.Settings.ShowTagGroupAltNamesSetting);
+            BaseCacheWarnings = _settings.GetBool(Components.TagTree.Settings.BaseCacheWarningsSetting);
         }
     }
 }

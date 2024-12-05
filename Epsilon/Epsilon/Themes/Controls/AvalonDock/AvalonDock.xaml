@@ -66,9 +66,7 @@
         </DataTemplate.Triggers>
     </DataTemplate>
 
-    <Style
-        x:Key="AvalonDock_ThemeMetro_ToolButtonStyle"
-        TargetType="ToggleButton">
+    <Style x:Key="AvalonDock_ThemeMetro_ToolButtonStyle" TargetType="ToggleButton">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="Transparent" />
@@ -87,9 +85,7 @@
         </Setter>
     </Style>
 
-    <Style
-        x:Key="AvalonDock_ThemeMetro_ButtonStyle"
-        TargetType="Button">
+    <Style x:Key="AvalonDock_ThemeMetro_ButtonStyle" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="#f1f1f1" />
         <Setter Property="BorderThickness" Value="1" />
@@ -132,9 +128,7 @@
     </Style>
     
     <!--  DocumentPaneControlStyle  -->
-    <Style
-        x:Key="AvalonDock_ThemeMetro_DocumentPaneControlStyle"
-        TargetType="{x:Type avalonDockControls:LayoutDocumentPaneControl}">
+    <Style x:Key="AvalonDock_ThemeMetro_DocumentPaneControlStyle" TargetType="{x:Type avalonDockControls:LayoutDocumentPaneControl}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Template">
@@ -325,9 +319,7 @@
     </Style>
 
     <!--  AnchorablePaneControlStyle  -->
-    <Style
-        x:Key="AvalonDock_ThemeMetro_AnchorablePaneControlStyle"
-        TargetType="{x:Type avalonDockControls:LayoutAnchorablePaneControl}">
+    <Style x:Key="AvalonDock_ThemeMetro_AnchorablePaneControlStyle" TargetType="{x:Type avalonDockControls:LayoutAnchorablePaneControl}">
         <Setter Property="TabStripPlacement" Value="Bottom" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="BorderBrush" Value="#FF434346" />
@@ -639,9 +631,7 @@
         </Setter>
     </Style>
 
-    <ControlTemplate
-        x:Key="AvalonDock_ThemeMetro_AnchorSideTemplate"
-        TargetType="{x:Type avalonDockControls:LayoutAnchorSideControl}">
+    <ControlTemplate x:Key="AvalonDock_ThemeMetro_AnchorSideTemplate" TargetType="{x:Type avalonDockControls:LayoutAnchorSideControl}">
         <ItemsControl ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Children}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -654,9 +644,7 @@
         </ItemsControl>
     </ControlTemplate>
 
-    <ControlTemplate
-        x:Key="AvalonDock_ThemeMetro_AnchorGroupTemplate"
-        TargetType="{x:Type avalonDockControls:LayoutAnchorGroupControl}">
+    <ControlTemplate x:Key="AvalonDock_ThemeMetro_AnchorGroupTemplate" TargetType="{x:Type avalonDockControls:LayoutAnchorGroupControl}">
         <ItemsControl
             ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Children}"
             SnapsToDevicePixels="True">
@@ -682,9 +670,7 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <ControlTemplate
-        x:Key="AvalonDock_ThemeMetro_AnchorTemplate"
-        TargetType="{x:Type avalonDockControls:LayoutAnchorControl}">
+    <ControlTemplate x:Key="AvalonDock_ThemeMetro_AnchorTemplate" TargetType="{x:Type avalonDockControls:LayoutAnchorControl}">
         <Border
             x:Name="Bd"
             Margin="4,0"
@@ -880,9 +866,7 @@
     <Geometry x:Key="DocumentPaneEmpty">M 0,36 L 0,36 0,76 26,76 36,87 36,112 76,112 76,87 87,76 112,76 112,36 87,36 76,26 76,0 36,0 36,26 26,36 0,36</Geometry>
     <Geometry x:Key="DocumentPaneLargeEmpty">M 0,72 L 0,112 61,112 73,123 72,184 112,184 112,123 123,112 184,112 184,72 123,72 112,61 112,0 72,0 72,61 61,72 0,72</Geometry>
 
-    <Style
-        x:Key="{x:Type avalonDockControls:OverlayWindow}"
-        TargetType="{x:Type avalonDockControls:OverlayWindow}">
+    <Style x:Key="{x:Type avalonDockControls:OverlayWindow}" TargetType="{x:Type avalonDockControls:OverlayWindow}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
@@ -1288,9 +1272,7 @@
     </ContextMenu>
 
     <!--  DockingManager  -->
-    <Style
-        x:Key="{x:Type avalonDock:DockingManager}"
-        TargetType="{x:Type avalonDock:DockingManager}">
+    <Style x:Key="{x:Type avalonDock:DockingManager}" x:Name="dockingManager" TargetType="{x:Type avalonDock:DockingManager}">
         <Setter Property="Background" Value="{DynamicResource AvalonDock_ThemeMetro_BaseColor1}" />
         <Setter Property="DocumentPaneControlStyle" Value="{StaticResource AvalonDock_ThemeMetro_DocumentPaneControlStyle}" />
         <Setter Property="AnchorablePaneControlStyle" Value="{StaticResource AvalonDock_ThemeMetro_AnchorablePaneControlStyle}" />
@@ -1364,9 +1346,7 @@
     </Style>
 
     <!--  LayoutGridResizerControl  -->
-    <Style
-        x:Key="{x:Type avalonDockControls:LayoutGridResizerControl}"
-        TargetType="{x:Type avalonDockControls:LayoutGridResizerControl}">
+    <Style x:Key="{x:Type avalonDockControls:LayoutGridResizerControl}" TargetType="{x:Type avalonDockControls:LayoutGridResizerControl}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
@@ -1572,9 +1552,7 @@
         </Setter>
     </Style>
 
-    <Style
-        x:Key="{x:Type avalonDockControls:LayoutDocumentFloatingWindowControl}"
-        TargetType="{x:Type avalonDockControls:LayoutDocumentFloatingWindowControl}">
+    <Style x:Key="{x:Type avalonDockControls:LayoutDocumentFloatingWindowControl}" TargetType="{x:Type avalonDockControls:LayoutDocumentFloatingWindowControl}">
         <Setter Property="Background" Value="{DynamicResource AvalonDock_ThemeMetro_BaseColor1}" />
         <Setter Property="BorderBrush" Value="{DynamicResource AvalonDock_ThemeMetro_BaseColor6}" />
         <Setter Property="Topmost" Value="{DynamicResource AlwaysOnTop}"/>
@@ -1743,9 +1721,7 @@
         </Setter>
     </Style>
 
-    <Style
-        x:Key="{x:Type avalonDockControls:LayoutAnchorableFloatingWindowControl}"
-        TargetType="{x:Type avalonDockControls:LayoutAnchorableFloatingWindowControl}">
+    <Style x:Key="{x:Type avalonDockControls:LayoutAnchorableFloatingWindowControl}" TargetType="{x:Type avalonDockControls:LayoutAnchorableFloatingWindowControl}">
         <Setter Property="Background" Value="{DynamicResource AvalonDock_ThemeMetro_BaseColor1}" />
         <Setter Property="BorderBrush" Value="{DynamicResource AvalonDock_ThemeMetro_BaseColor6}" />
         <Setter Property="Topmost" Value="{DynamicResource AlwaysOnTop}"/>
@@ -1925,9 +1901,7 @@
         </Setter>
     </Style>
 
-    <Style
-        x:Key="{x:Type avalonDockControls:LayoutAutoHideWindowControl}"
-        TargetType="{x:Type avalonDockControls:LayoutAutoHideWindowControl}">
+    <Style x:Key="{x:Type avalonDockControls:LayoutAutoHideWindowControl}" TargetType="{x:Type avalonDockControls:LayoutAutoHideWindowControl}">
         <Setter Property="Background" Value="{DynamicResource AvalonDock_ThemeMetro_BaseColor1}" />
     </Style>
 
@@ -1958,9 +1932,7 @@
         <GradientStop Offset="1" Color="#FFC9EDFD" />
     </LinearGradientBrush>
 
-    <Style
-        x:Key="AvalonDock_ThemeMetro_NavigatorWindowListBoxItemStyle"
-        TargetType="ListBoxItem">
+    <Style x:Key="AvalonDock_ThemeMetro_NavigatorWindowListBoxItemStyle" TargetType="ListBoxItem">
         <Setter Property="FocusVisualStyle" Value="{StaticResource AvalonDock_ThemeMetro_NavigatorWindowListBoxItemFocusVisual}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
@@ -2024,9 +1996,7 @@
         </Setter>
     </Style>
 
-    <Style
-        x:Key="{x:Type avalonDockControls:NavigatorWindow}"
-        TargetType="{x:Type avalonDockControls:NavigatorWindow}">
+    <Style x:Key="{x:Type avalonDockControls:NavigatorWindow}" TargetType="{x:Type avalonDockControls:NavigatorWindow}">
         <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
         <Setter Property="SizeToContent" Value="WidthAndHeight" />
         <Setter Property="ResizeMode" Value="NoResize" />

@@ -27,7 +27,7 @@ namespace EpsilonLib.Shell.RecentFiles
         {
             if (command.Tag is FileHistoryRecord record)
             {
-                await _editorService.Value.OpenFileWithEditorAsync(record.FilePath, record.EditorProviderId);
+                await _editorService.Value.OpenFileWithEditorAsync(record.EditorProviderId, record.FilePath);
             }
         }
 

@@ -9,7 +9,9 @@ namespace EpsilonLib.Options
         bool IsDirty { get; set; }
 
         void Apply();
-    }
+
+		void Save();
+	}
 
     public class ProvideOptionsPageAttribute
     {

@@ -150,6 +150,7 @@
     <Compile Include="Fields\FieldFactory.cs" />
     <Compile Include="Fields\FieldVisitor.cs" />
     <Compile Include="Common\TagList.cs" />
+    <Compile Include="Settings.cs" />
     <Page Include="GotoWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

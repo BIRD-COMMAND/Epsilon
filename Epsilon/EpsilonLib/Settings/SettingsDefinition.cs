@@ -3,9 +3,9 @@
     public class SettingDefinition
     {
         public string Key { get; }
-        public object DefaultValue { get; }
+        public string DefaultValue { get; }
 
-        public SettingDefinition(string key, object defaultValue)
+        public SettingDefinition(string key, string defaultValue)
         {
             Key = key;
             DefaultValue = defaultValue;

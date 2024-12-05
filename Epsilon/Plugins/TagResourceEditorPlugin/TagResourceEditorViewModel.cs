@@ -22,13 +22,13 @@ namespace TagResourceEditorPlugin
         private ICacheFile _cacheFile;
         private TagResourceItem _activeItem;
         private IField _displayField;
-        private ISettingsService _settings;
+        private ISettingsService _settingsService;
 
         public TagResourceEditorViewModel(IShell shell, ICacheFile cacheFile, ISettingsService settings)
         {
             _shell = shell;
             _cacheFile = cacheFile;
-            _settings = settings;
+            _settingsService = settings;
         }
 
         public ICollection<TagResourceItem> Items { get; set; }
@@ -96,13 +96,9 @@ namespace TagResourceEditorPlugin
             var resourceDefinition = await Task.Run(() => TagResourceUtils.GetResourceDefinition(resourceCache, definitionType, resourceReference));
 
             progress.Report("Creating fields...");
-
-            // bit of a hack
-            var config = new TagStructEditor.Configuration() { };
-            var settings = _settings.GetCollection("DefinitionEditor");
-            config.DisplayFieldTypes = settings.Get("DisplayFieldTypes", false);
-            config.DisplayFieldOffsets = settings.Get("DisplayFieldOffsets", false);
-            config.CollapseBlocks = settings.Get("CollapseBlocks", false);
+            
+			TagStructEditor.Configuration config = new TagStructEditor.Configuration() { };
+			TagStructEditor.Settings.Load(_settingsService, config);
 
             DisplayField = await Task.Run(() =>
             {

@@ -225,9 +225,7 @@ namespace EpsilonLib.Shell.TreeModels
 						.FindAncestors<TreeViewItem>().FirstOrDefault();
 				if (treeViewItem != null && treeViewItem.IsKeyboardFocusWithin && keyEventArgs.Key == Key.Enter) {
 					_sink.NodeMouseActionAttempted(
-						new TreeNodeEventArgs(
-							TreeViewItem.KeyDownEvent, sender, treeViewItem.DataContext as ITreeNode, keyEventArgs.Key
-						)
+						new TreeNodeEventArgs(TreeViewItem.KeyDownEvent, sender, treeViewItem.DataContext as ITreeNode, keyEventArgs.Key, Keyboard.Modifiers)
 					);
 				}
 			}
@@ -240,9 +238,10 @@ namespace EpsilonLib.Shell.TreeModels
 	{
 		public ITreeNode Node { get; }
 		public Key Key { get; } = Key.None;
+		public ModifierKeys Modifiers { get; set; } = ModifierKeys.None;
 
 		public TreeNodeEventArgs(RoutedEvent routedEvent, object source, ITreeNode node) : base(routedEvent, source) { Node = node; }
-		public TreeNodeEventArgs(RoutedEvent routedEvent, object source, ITreeNode node, Key key) : base(routedEvent, source) { Node = node; Key = key; }
+		public TreeNodeEventArgs(RoutedEvent routedEvent, object source, ITreeNode node, Key key, ModifierKeys modifiers) : base(routedEvent, source) { Node = node; Key = key; Modifiers = modifiers; }
 	}
 
 	public interface ITreeViewEventSink

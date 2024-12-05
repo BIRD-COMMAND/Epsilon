@@ -430,7 +430,7 @@ namespace CacheEditor
 
         public bool BaseCacheModifyCheck(GameCache cache)
         {
-            bool warningsEnabled = _cacheEditingService.Settings.Get<bool>(Components.TagTree.Settings.BaseCacheWarningsSetting);
+            bool warningsEnabled = _cacheEditingService.Settings.GetBool(Components.TagTree.Settings.BaseCacheWarningsSetting);
 
             if (!warningsEnabled) {
 				return true;

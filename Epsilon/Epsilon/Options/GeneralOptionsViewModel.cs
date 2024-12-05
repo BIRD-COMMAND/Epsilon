@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System;
 using System.Linq;
 using Epsilon.Pages;
+using Epsilon.Properties;
 
 namespace Epsilon.Options
 {
@@ -20,7 +21,9 @@ namespace Epsilon.Options
         private bool _defaultCachePathIsValid;
         private string _defaultPakPath;
         private bool _defaultPakPathIsValid;
-        private string _startupPositionLeft;
+		private string _defaultPakCachePath;
+		private bool _defaultPakCachePathIsValid;
+		private string _startupPositionLeft;
         private string _startupPositionTop;
         private string _startupWidth;
         private string _startupHeight;
@@ -28,8 +31,9 @@ namespace Epsilon.Options
 
         private string _defaultCacheShort;
         private string _defaultPakShort;
+		private string _defaultPakCacheShort;
 
-        private string _accentColorHex;
+		private string _accentColorHex;
         private string _theme;
 
         [ImportingConstructor]
@@ -65,8 +69,8 @@ namespace Epsilon.Options
 
         public void RevertAppearance()
         {
-            string og_accent = _settings.Get(GeneralSettings.AccentColorSetting.Key, "#007ACC");
-            string og_theme = "Default";
+            string og_accent = _settings.Get(GeneralSettings.AccentColor);
+			string og_theme = "Default";
             UpdateAppearance(og_accent, og_theme);
         }
 
@@ -123,7 +127,28 @@ namespace Epsilon.Options
             set => SetOptionAndNotify(ref _defaultCachePathIsValid, value);
         }
 
-        public string StartupPositionLeft
+		public string DefaultPakCachePath {
+			get => _defaultPakCachePath;
+			set {
+				SetOptionAndNotify(ref _defaultPakCachePath, value);
+				DefaultPakCacheShort = ShortenPath(value);
+			}
+		}
+
+		public string DefaultPakCacheShort {
+			get => _defaultPakCacheShort;
+			set => SetOptionAndNotify(ref _defaultPakCacheShort, value);
+		}
+
+		public bool PakCachePathIsValid {
+			get {
+				_defaultPakCachePathIsValid = ( File.Exists(@_defaultPakCachePath) && @_defaultPakCachePath.EndsWith(".dat") || @_defaultPakCachePath == "" );
+				return _defaultPakCachePathIsValid;
+			}
+			set => SetOptionAndNotify(ref _defaultCachePathIsValid, value);
+		}
+
+		public string StartupPositionLeft
         {
             get => _startupPositionLeft;
             set => SetOptionAndNotify(ref _startupPositionLeft, value);
@@ -153,35 +178,40 @@ namespace Epsilon.Options
             set => SetOptionAndNotify(ref _alwaysOnTop, value);
         }
 
-        public override void Apply()
+		public override void Save() { Apply(); }
+
+		public override void Apply()
         {
             if (CachePathIsValid)
-                _settings.Set(GeneralSettings.DefaultTagCacheSetting.Key, DefaultCachePath);
+                _settings.Set(GeneralSettings.DefaultTagCache.Key, DefaultCachePath);
             if (PakPathIsValid)
-                _settings.Set(GeneralSettings.DefaultPakSetting.Key, DefaultPakPath);
+                _settings.Set(GeneralSettings.DefaultPak.Key, DefaultPakPath);
+			if (PakCachePathIsValid)
+				_settings.Set(GeneralSettings.DefaultPakCache.Key, DefaultPakCachePath);
 
-            _settings.Set(GeneralSettings.StartupPositionLeftSetting.Key, StartupPositionLeft);
-            _settings.Set(GeneralSettings.StartupPositionTopSetting.Key, StartupPositionTop);
+			_settings.Set(GeneralSettings.StartupPositionLeft.Key, StartupPositionLeft);
+            _settings.Set(GeneralSettings.StartupPositionTop.Key, StartupPositionTop);
 
-            _settings.Set(GeneralSettings.StartupWidthSetting.Key, StartupWidth);
-            _settings.Set(GeneralSettings.StartupHeightSetting.Key, StartupHeight);
+            _settings.Set(GeneralSettings.StartupWidth.Key, StartupWidth);
+            _settings.Set(GeneralSettings.StartupHeight.Key, StartupHeight);
 
-            _settings.Set(GeneralSettings.AlwaysOnTopSetting.Key, AlwaysOnTop);
-            _settings.Set(GeneralSettings.AccentColorSetting.Key, AccentColorHex);
+            _settings.SetBool(GeneralSettings.AlwaysOnTop.Key, AlwaysOnTop);
+            _settings.Set(GeneralSettings.AccentColor.Key, AccentColorHex);
 
             Application.Current.Resources["AlwaysOnTop"] = AlwaysOnTop;
         }
 
         public override void Load()
         {
-            DefaultCachePath = _settings.Get(GeneralSettings.DefaultTagCacheSetting.Key, "");
-            DefaultPakPath = _settings.Get(GeneralSettings.DefaultPakSetting.Key, "");
-            StartupPositionLeft = _settings.Get(GeneralSettings.StartupPositionLeftSetting.Key, "");
-            StartupPositionTop = _settings.Get(GeneralSettings.StartupPositionTopSetting.Key, "");
-            StartupWidth = _settings.Get(GeneralSettings.StartupWidthSetting.Key, "");
-            StartupHeight = _settings.Get(GeneralSettings.StartupHeightSetting.Key, "");
-            AlwaysOnTop = _settings.Get(GeneralSettings.AlwaysOnTopSetting.Key, false);
-            AccentColorHex = _settings.Get(GeneralSettings.AccentColorSetting.Key, "#007ACC");
+            DefaultCachePath = _settings.Get(GeneralSettings.DefaultTagCache);
+            DefaultPakPath = _settings.Get(GeneralSettings.DefaultPak);
+			DefaultPakCachePath = _settings.Get(GeneralSettings.DefaultPakCache);
+			StartupPositionLeft = _settings.Get(GeneralSettings.StartupPositionLeft);
+            StartupPositionTop = _settings.Get(GeneralSettings.StartupPositionTop);
+            StartupWidth = _settings.Get(GeneralSettings.StartupWidth);
+            StartupHeight = _settings.Get(GeneralSettings.StartupHeight);
+            AlwaysOnTop = _settings.GetBool(GeneralSettings.AlwaysOnTop);
+            AccentColorHex = _settings.Get(GeneralSettings.AccentColor);
         }
     }
 }

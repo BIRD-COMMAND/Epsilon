@@ -6,13 +6,14 @@ namespace Epsilon.Options
     {
         public const string CollectionKey = "General";
 
-        public static SettingDefinition DefaultTagCacheSetting = new SettingDefinition("DefaultTagCache", "");
-        public static SettingDefinition DefaultPakSetting = new SettingDefinition("DefaultModPackage", "");
-        public static SettingDefinition StartupPositionLeftSetting = new SettingDefinition("StartupPositionLeft", "");
-        public static SettingDefinition StartupPositionTopSetting = new SettingDefinition("StartupPositionTop", "");
-        public static SettingDefinition StartupWidthSetting = new SettingDefinition("StartupWidth", "");
-        public static SettingDefinition StartupHeightSetting = new SettingDefinition("StartupHeight", "");
-        public static SettingDefinition AlwaysOnTopSetting = new SettingDefinition("AlwaysOnTop", "");
-        public static SettingDefinition AccentColorSetting = new SettingDefinition("AccentColor", "#007ACC");
+        public static SettingDefinition DefaultTagCache = new SettingDefinition("DefaultTagCache", string.Empty);
+        public static SettingDefinition DefaultPak = new SettingDefinition("DefaultModPackage", string.Empty);
+        public static SettingDefinition DefaultPakCache = new SettingDefinition("DefaultModPackageCache", string.Empty);
+		public static SettingDefinition StartupPositionLeft = new SettingDefinition("StartupPositionLeft", "0");
+        public static SettingDefinition StartupPositionTop = new SettingDefinition("StartupPositionTop", "0");
+        public static SettingDefinition StartupWidth = new SettingDefinition("StartupWidth", "0");
+        public static SettingDefinition StartupHeight = new SettingDefinition("StartupHeight", "0");
+        public static SettingDefinition AlwaysOnTop = new SettingDefinition("AlwaysOnTop", false.ToString());
+        public static SettingDefinition AccentColor = new SettingDefinition("AccentColor", "#007ACC");
     }
 }

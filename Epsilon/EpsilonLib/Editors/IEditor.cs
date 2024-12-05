@@ -14,7 +14,7 @@ namespace EpsilonLib.Editors
 
         IReadOnlyList<string> FileExtensions { get; }
 
-        Task OpenFileAsync(IShell shell, string fileName);
+        Task OpenFileAsync(IShell shell, params string[] paths);
     }
 
     public interface IEditor : IScreen

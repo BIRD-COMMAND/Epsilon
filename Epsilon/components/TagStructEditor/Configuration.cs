@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EpsilonLib.Settings;
+using System;
 using TagStructEditor.Fields;
 using TagTool.Cache;
 

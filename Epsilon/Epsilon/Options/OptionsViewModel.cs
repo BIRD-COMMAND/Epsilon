@@ -39,18 +39,23 @@ namespace Epsilon.Options
             }
         }
 
-        public void Apply()
-        {
-            foreach(var page in _optionsService.OptionPages)
-            {
-                if(page.IsDirty)
-                    page.Apply();
-
-                page.IsDirty = false;
-            }
-
-            RequestClose(true);
+        public void Apply() { 
+            ApplyChanges(); 
         }
+
+        public void Save() {
+            ApplyChanges();
+			RequestClose(true);
+		}
+
+        private void ApplyChanges() {
+			foreach (var page in _optionsService.OptionPages) {
+				if (page.IsDirty)
+					page.Apply();
+
+				page.IsDirty = false;
+			}
+		}
 
         public void Cancel()
         {

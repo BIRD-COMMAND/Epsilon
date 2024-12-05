@@ -16,7 +16,7 @@ namespace DefinitionEditor.Options
         [ImportingConstructor]
         public OptionsPageViewModel(ISettingsService settingsService) : base("Cache Editor", "Definition Editor")
         {
-            _settings = settingsService.GetCollection(Settings.CollectionKey);
+            _settings = settingsService.GetCollection(TagStructEditor.Settings.CollectionKey);
         }
 
         public bool DisplayFieldTypes
@@ -37,18 +37,20 @@ namespace DefinitionEditor.Options
             set =>  SetOptionAndNotify(ref _collapseBlocks, value);
         }
 
-        public override void Apply()
+		public override void Save() { Apply(); }
+
+		public override void Apply()
         {
-            _settings.Set(Settings.DisplayFieldTypesSetting.Key, DisplayFieldTypes);
-            _settings.Set(Settings.DisplayFieldOffsetsSetting.Key, DisplayFieldOffsets);
-            _settings.Set(Settings.CollapseBlocksSetting.Key, CollapseBlocks);
+            _settings.SetBool(TagStructEditor.Settings.DisplayFieldTypesSetting.Key, DisplayFieldTypes);
+            _settings.SetBool(TagStructEditor.Settings.DisplayFieldOffsetsSetting.Key, DisplayFieldOffsets);
+            _settings.SetBool(TagStructEditor.Settings.CollapseBlocksSetting.Key, CollapseBlocks);
         }
 
         public override void Load()
         {
-            DisplayFieldTypes = _settings.Get(Settings.DisplayFieldTypesSetting.Key, (bool)Settings.DisplayFieldTypesSetting.DefaultValue);
-            DisplayFieldOffsets = _settings.Get(Settings.DisplayFieldOffsetsSetting.Key, (bool)Settings.DisplayFieldOffsetsSetting.DefaultValue);
-            CollapseBlocks = _settings.Get(Settings.CollapseBlocksSetting.Key, (bool)Settings.CollapseBlocksSetting.DefaultValue);
+            DisplayFieldTypes = _settings.GetBool(TagStructEditor.Settings.DisplayFieldTypesSetting);
+            DisplayFieldOffsets = _settings.GetBool(TagStructEditor.Settings.DisplayFieldOffsetsSetting);
+            CollapseBlocks = _settings.GetBool(TagStructEditor.Settings.CollapseBlocksSetting);
         }
     }
 }

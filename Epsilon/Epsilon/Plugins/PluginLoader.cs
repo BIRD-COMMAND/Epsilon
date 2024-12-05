@@ -18,12 +18,12 @@ namespace Epsilon
 
         public void LoadPlugins()
         {
-            var pluginDir = new DirectoryInfo("plugins");
+			DirectoryInfo pluginDir = new DirectoryInfo("plugins");
             pluginDir.Create();
 
-            foreach (var pluginFolder in pluginDir.GetDirectories())
+            foreach (DirectoryInfo pluginFolder in pluginDir.GetDirectories())
             {
-                var pluginDll = new FileInfo(Path.Combine(pluginFolder.FullName, $"{pluginFolder.Name}.dll"));
+				FileInfo pluginDll = new FileInfo(Path.Combine(pluginFolder.FullName, $"{pluginFolder.Name}.dll"));
                 if (!pluginDll.Exists)
                 {
                     Logger.Warn($"Plugin folder encountered with no matching dll. expected: '{pluginDll}'");
@@ -33,7 +33,7 @@ namespace Epsilon
                 if (!TryLoadPluginAssembly(pluginDll, out Assembly pluginAssembly))
                     continue;
 
-                var pluginInfo = new PluginInfo()
+				PluginInfo pluginInfo = new PluginInfo()
                 {
                     File = pluginDll,
                     Assembly = pluginAssembly,
@@ -67,12 +67,12 @@ namespace Epsilon
 
         private void ResolveDependencies()
         {
-            foreach (var plugin in _plugins)
+            foreach (PluginInfo plugin in _plugins)
             {
-                var referencedAssemblies = plugin.Assembly.GetReferencedAssemblies();
-                foreach (var refAssembly in referencedAssemblies)
+				AssemblyName[] referencedAssemblies = plugin.Assembly.GetReferencedAssemblies();
+                foreach (AssemblyName refAssembly in referencedAssemblies)
                 {
-                    var referencedPlugin = _plugins.FirstOrDefault(p => p.Assembly.GetName().FullName == refAssembly.FullName);
+					PluginInfo referencedPlugin = _plugins.FirstOrDefault(p => p.Assembly.GetName().FullName == refAssembly.FullName);
                     if (referencedPlugin != null)
                         plugin.Dependencies.Add(referencedPlugin);
                 }
@@ -81,7 +81,7 @@ namespace Epsilon
 
         private void BuildLoadQueue()
         {
-            foreach (var plugin in _plugins)
+            foreach (PluginInfo plugin in _plugins)
                 AddPluginToLoadQueue(plugin);
         }
 
@@ -90,7 +90,7 @@ namespace Epsilon
             if (_loadQueue.Contains(plugin))
                 return;
 
-            foreach (var dependency in plugin.Dependencies)
+            foreach (PluginInfo dependency in plugin.Dependencies)
                 AddPluginToLoadQueue(dependency);
 
             _loadQueue.Add(plugin);

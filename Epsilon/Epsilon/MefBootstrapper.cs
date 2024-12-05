@@ -34,14 +34,14 @@ namespace WpfApp20
 
             _assemblies.AddRange(GetAssemblies());
 
-            var catalog = new AggregateCatalog(
+			AggregateCatalog catalog = new AggregateCatalog(
                 _assemblies.Select(x => new AssemblyCatalog(x))
                 .OfType<ComposablePartCatalog>());
 
             _container = new CompositionContainer(catalog);
-            GlobalServiceProvider.Initialize(_container); // hurr durr service locator is an anti-pattern. fight me
+            GlobalServiceProvider.Initialize(_container);
 
-            var batch = new CompositionBatch();
+			CompositionBatch batch = new CompositionBatch();
 
             this.DefaultConfigureIoC(batch);
             this.ConfigureIoC(batch);
@@ -55,14 +55,14 @@ namespace WpfApp20
 
             try
             {
-                var exports = _container.GetExports<object>(contract);
+				IEnumerable<Lazy<object>> exports = _container.GetExports<object>(contract);
 
                 if (exports.Any())
                     return exports.First().Value;
             }
             catch(ReflectionTypeLoadException ex)
             {
-                var exceptions = string.Join(Environment.NewLine, ex.LoaderExceptions.Select(x => x.ToString()));
+				string exceptions = string.Join(Environment.NewLine, ex.LoaderExceptions.Select(x => x.ToString()));
                 Logger.Error($"Unable to load one or more of the requested types while resolving Type '{contract}'. Exceptions:\n{exceptions}");
                 throw;
             }
@@ -87,14 +87,14 @@ namespace WpfApp20
 
         protected virtual void DefaultConfigureIoC(CompositionBatch batch)
         {
-            // Mark these as weak-bindings, so the user can replace them if they want
-            var viewManagerConfig = new ViewManagerConfig()
+			// Mark these as weak-bindings, so the user can replace them if they want
+			ViewManagerConfig viewManagerConfig = new ViewManagerConfig()
             {
                 ViewFactory = this.GetInstance,
                 ViewAssemblies = _assemblies
             };
 
-            var viewManager = new Epsilon.ViewManager(viewManagerConfig);
+			Epsilon.ViewManager viewManager = new Epsilon.ViewManager(viewManagerConfig);
             batch.AddExportedValue<IWindowManager>(new WindowManager(viewManager, () => throw new NotImplementedException(), this));
             batch.AddExportedValue<IEventAggregator>(new EventAggregator());
             batch.AddExportedValue<IViewManager>(viewManager);

@@ -33,29 +33,35 @@ namespace EpsilonLib.Editors
             return _providers.FirstOrDefault(x => x.Id == id);
         }
 
-        public async Task OpenFileWithEditorAsync(string filePath, Guid editorProviderId)
+        public async Task OpenFileWithEditorAsync(Guid editorProviderId, params string[] paths)
         {
-            var shell = _shell.Value;
+			var shell = _shell.Value;
+            string filePath;
 
-            using (var progress = shell.CreateProgressScope())
+            if (paths == null || paths.Length == 0){ throw new NotSupportedException("Unable to open null file"); }
+            else { filePath = paths[0]; }
+
+			using (var progress = shell.CreateProgressScope())
             {
                 progress.Report($"Loading '{filePath}'...");
-                var provider = GetProvider(editorProviderId);
-                if (provider == null)
+				var provider = GetProvider(editorProviderId);
+                if (provider == null){
                     throw new NotSupportedException("Unable to find editor for this file type");
+                }
 
-                await provider.OpenFileAsync(shell, filePath);
+                await provider.OpenFileAsync(shell, paths);
                 await _fileHistory.RecordFileOpened(editorProviderId, filePath);
             }
         }
 
         public Task OpenFileAsync(string filePath)
         {
-            var file = new FileInfo(filePath);
+			var file = new FileInfo(filePath);
             foreach(var provider in EditorProviders)
             {
-                if (provider.FileExtensions.Contains(file.Extension))
-                    return OpenFileWithEditorAsync(filePath, provider.Id); 
+                if (provider.FileExtensions.Contains(file.Extension)){
+                    return OpenFileWithEditorAsync(provider.Id, filePath); 
+                }
             }
 
             throw new NotSupportedException();

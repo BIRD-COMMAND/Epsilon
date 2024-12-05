@@ -21,7 +21,7 @@
             <Setter Property="Height" Value="26" />
         </Style>
     </Window.Resources>
-    
+
     <Grid Margin="4">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160" />
@@ -70,6 +70,12 @@
                     IsDefault="True"
                     Click="{s:Action Apply}"
                     Content="Apply" />
+                <Button
+                    Width="70"
+                    Height="24"
+                    IsDefault="True"
+                    Click="{s:Action Save}"
+                    Content="Save" />
                 <Button
                     Width="70"
                     Height="24"

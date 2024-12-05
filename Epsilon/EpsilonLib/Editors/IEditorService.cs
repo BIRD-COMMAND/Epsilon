@@ -8,7 +8,7 @@ namespace EpsilonLib.Editors
     {
         IEnumerable<IEditorProvider> EditorProviders { get; }
 
-        Task OpenFileWithEditorAsync(string filePath, Guid editorProviderId);
+        Task OpenFileWithEditorAsync(Guid editorProviderId, params string[] paths);
         Task OpenFileAsync(string filePath);
     }
 }

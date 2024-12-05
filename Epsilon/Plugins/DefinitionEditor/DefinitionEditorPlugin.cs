@@ -17,14 +17,16 @@ namespace DefinitionEditor
         const string ContextKey = "DefinitionEditor.Context";
 
         private readonly ISettingsCollection _settings;
-        private readonly Lazy<IShell> _shell;
+        private readonly ISettingsService _settingsService;
+		private readonly Lazy<IShell> _shell;
        
         [ImportingConstructor]
         public DefinitionEditorPluginProvider(Lazy<IShell> shell, ISettingsService settingsService)
         {
             _shell = shell;
-            _settings = settingsService.GetCollection(Settings.CollectionKey);
-        }
+            _settings = settingsService.GetCollection(TagStructEditor.Settings.CollectionKey);
+			_settingsService = settingsService;
+		}
 
         public string DisplayName => "Definition";
 
@@ -38,17 +40,15 @@ namespace DefinitionEditor
             {
                 OpenTag = context.CacheEditor.OpenTag,
                 BrowseTag = context.CacheEditor.RunBrowseTagDialog,
-                ValueChanged = valueChangeSink.Invoke,
-                DisplayFieldTypes = _settings.Get<bool>(Settings.DisplayFieldTypesSetting),
-                DisplayFieldOffsets = _settings.Get<bool>(Settings.DisplayFieldOffsetsSetting),
-                CollapseBlocks = _settings.Get<bool>(Settings.CollapseBlocksSetting)
+                ValueChanged = valueChangeSink.Invoke
             };
+            TagStructEditor.Settings.Load(_settingsService, config);
 
-            var ctx = GetDefinitionEditorContext(context);
-            var factory = new FieldFactory(ctx.Cache, ctx.TagList, config);
+			var ctx = GetDefinitionEditorContext(context);
+			var factory = new FieldFactory(ctx.Cache, ctx.TagList, config);
 
-            var definitionData = await context.DefinitionData;
-            var field = await Task.Run(() => CreateField(context, factory, definitionData));
+			var definitionData = await context.DefinitionData;
+			var field = await Task.Run(() => CreateField(context, factory, definitionData));
 
             return new DefinitionEditorViewModel(
                 _shell.Value,
@@ -63,14 +63,14 @@ namespace DefinitionEditor
 
         private static StructField CreateField(TagEditorContext context, FieldFactory factory, object definitionData)
         {
-            var cache = context.CacheEditor.CacheFile.Cache;
-            var structType = cache.TagCache.TagDefinitions.GetTagDefinitionType(context.Instance.Group);
+			var cache = context.CacheEditor.CacheFile.Cache;
+			var structType = cache.TagCache.TagDefinitions.GetTagDefinitionType(context.Instance.Group);
 
-            var stopWatch = new Stopwatch();
+			var stopWatch = new Stopwatch();
 
             stopWatch.Start();
 
-            var field = factory.CreateStruct(structType);
+			var field = factory.CreateStruct(structType);
             Debug.WriteLine($"Create took {stopWatch.ElapsedMilliseconds}ms");
 
             stopWatch.Restart();
@@ -83,8 +83,8 @@ namespace DefinitionEditor
 
         private static PerCacheDefinitionEditorContext GetDefinitionEditorContext(TagEditorContext context)
         {
-            var cacheEditor = context.CacheEditor;
-            var cache = cacheEditor.CacheFile.Cache;
+			var cacheEditor = context.CacheEditor;
+			var cache = cacheEditor.CacheFile.Cache;
 
             if (!cacheEditor.PluginStorage.TryGetValue(ContextKey, out object value) || 
                 !ReferenceEquals(cache, (value as PerCacheDefinitionEditorContext).Cache))
