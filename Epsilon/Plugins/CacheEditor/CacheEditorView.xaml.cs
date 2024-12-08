@@ -34,7 +34,7 @@ namespace CacheEditor
             if ((e.Key == Key.W && e.KeyboardDevice.IsKeyDown(Key.LeftCtrl)) || (e.Key == Key.LeftCtrl && e.KeyboardDevice.IsKeyDown(Key.W)))
             {
                 var cacheViewModel = DataContext as CacheEditorViewModel;
-                if (cacheViewModel.IsActive)
+                if (cacheViewModel?.IsActive ?? false)
                 {
                     if (cacheViewModel.ActiveItem is TagEditorViewModel currentTagViewModel && currentTagViewModel.CloseCommand.CanExecute(null))
                     {
@@ -43,6 +43,16 @@ namespace CacheEditor
                     e.Handled = true;
                 }
             }
-        }
+
+			// ctrl-I to copy cache info to clipboard
+			if (( e.Key == Key.I && e.KeyboardDevice.IsKeyDown(Key.LeftCtrl) ) || ( e.Key == Key.LeftCtrl && e.KeyboardDevice.IsKeyDown(Key.I) )) {
+                var cacheViewModel = DataContext as CacheEditorViewModel;
+				if (cacheViewModel?.IsActive ?? false) {
+                    cacheViewModel.CopyCacheInfoToClipboard();
+					e.Handled = true;
+				}
+			}
+
+		}
     }
 }

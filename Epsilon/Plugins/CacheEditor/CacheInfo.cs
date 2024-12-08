@@ -3,7 +3,7 @@ using System.Linq;
 using TagTool.Cache;
 using TagTool.IO;
 
-namespace CacheEditor.Components.Info
+namespace CacheEditor
 {
     class CacheInfo
     {
@@ -26,5 +26,16 @@ namespace CacheEditor.Components.Info
             Version = cache.Version;
             Endianess = cache.Endianness;
         }
-    }
+
+		public override string ToString() {
+			return $"Cache: {CacheDisplayName}\n" +
+				   $"Directory: {CacheDirectory.FullName}\n" +
+				   $"Version: {Version}\n" +
+				   $"Tag Count: {TagCount}\n" +
+				   $"String Count: {StringCount}\n" +
+				   $"Locale Count: {LocaleCount}\n" +
+				   $"Endianess: {Endianess}";
+		}
+
+	}
 }

@@ -88,10 +88,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Info\CacheInfoToolView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Components\TagTree\TagTreeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -127,9 +123,7 @@
     <Compile Include="Commands\ShowCommandLogCommand.cs" />
     <Compile Include="Commands\ShowCommandLogCommandHandler.cs" />
     <Compile Include="Commands\ShowDependencyExplorerCommand.cs" />
-    <Compile Include="Commands\ShowInfoWindowCommand.cs" />
     <Compile Include="Commands\ShowDependencyExplorerCommandHandler.cs" />
-    <Compile Include="Commands\ShowInfoWindowCommandHandler.cs" />
     <Compile Include="Commands\ShowToolWindowCommandHandlerBase.cs" />
     <Compile Include="Components\CommandLog\CommandLogToolProvider.cs" />
     <Compile Include="Components\CommandLog\CommandLogView.xaml.cs">
@@ -141,12 +135,7 @@
       <DependentUpon>DependencyExplorerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\DependencyExplorer\DependencyExplorerViewModel.cs" />
-    <Compile Include="Components\Info\CacheInfo.cs" />
-    <Compile Include="Components\Info\CacheInfoToolProvider.cs" />
-    <Compile Include="Components\Info\CacheInfoToolView.xaml.cs">
-      <DependentUpon>CacheInfoToolView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Info\CacheInfoToolViewModel.cs" />
+    <Compile Include="CacheInfo.cs" />
     <Compile Include="Components\TagExplorer\Commands\DeleteTagCommand.cs" />
     <Compile Include="Components\TagExplorer\Commands\ImportTagCommand.cs" />
     <Compile Include="Components\TagExplorer\MenuDefinitions.cs" />
@@ -274,5 +263,6 @@
       <Version>1.3.7</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

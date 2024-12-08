@@ -60,6 +60,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerJsonEditor", "Plugins
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitmapViewerPlugin", "Plugins\BitmapViewerPlugin\BitmapViewerPlugin.csproj", "{654D2D1C-68F0-4634-9D42-A359E4282BF7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A7BD3119-451B-4DF1-B914-ED7B0AE8AE7A}"
+	ProjectSection(SolutionItems) = preProject
+		..\ROADMAP.md = ..\ROADMAP.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

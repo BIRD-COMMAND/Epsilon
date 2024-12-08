@@ -12,13 +12,13 @@
 
 ✔ added startup mod cache option	
 
-🔜 disable keyboard navigation to the info window until it's reimplemented  
---- it is useless in its current state and just steals focus
+✔ ~~disable keyboard navigation to the info window~~
+✔ completely remove info window
+✔ copy active Cache / Mod Info to clipboard with CTRL+I
 
-🔜 intuitive / standardized tab docking and navigation shortcuts
-
-🔜 add Poke functionality from Epsilon-Poke application version  
+🔜 add Poke functionality from Epsilon-Poke application version
 --- already found the code and implementation in ILSpy
+🔜 add Revert \ Undo Poke functionality
 
 🔜 script window text editing (general improvements, shouldn't be garbage)
 
@@ -43,6 +43,4 @@
 - persistent per-group setting to automatically open a group on startup  
 (with optional dependency on a specific cache or mod package)
 
-🔜 reimplement "info window" in a more sensible way
-- make sure the info can actually be selected and copied
-- it would probably make more sense as a pop-up info window triggered from a menu or right-click menu
+🔜 intuitive / standardized tab docking and navigation shortcuts

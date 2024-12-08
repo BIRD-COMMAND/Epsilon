@@ -66,7 +66,11 @@ namespace CacheEditor
         public event EventHandler CurrentTagChanged;
         public CachedTag CurrentTag => (ActiveItem as TagEditorViewModel)?.Tag;
 
-        public object _activeLayoutItem;
+        public void CopyCacheInfoToClipboard() {
+            EpsilonLib.Shell.ClipboardEx.SetTextSafe(new CacheInfo(_cacheFile).ToString());
+        }
+
+		public object _activeLayoutItem;
 
         public object ActiveLayoutItem
         {
