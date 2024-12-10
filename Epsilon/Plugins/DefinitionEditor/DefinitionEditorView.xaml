@@ -10,7 +10,7 @@
     <UserControl.InputBindings>
         <KeyBinding Command="{Binding SaveCommand}" Modifiers="Control" Key="S"/>
     </UserControl.InputBindings>
-    
+
     <DockPanel>
         <!--  Toolbar  -->
         <Border
@@ -28,7 +28,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!--  Search  -->
-                
+
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
                     <TextBox x:Name="SearchBox"
                             Width="200"
@@ -55,7 +55,7 @@
                             ItemsSource="{Binding SearchResults.Results, Mode=OneWay}"
                             SelectedIndex="{Binding SearchResults.CurrentIndex, Mode=TwoWay}" />
                 </StackPanel>
-                
+
                 <!--  Action Pane  -->
                 <StackPanel
                     Grid.Column="1"
@@ -63,6 +63,10 @@
                     Orientation="Horizontal">
 
                     <Separator Margin="4,0" />
+                    <Button
+                        Command="{Binding PokeCommand}"
+                        Content="Poke"
+                        ToolTip="Poke the current changes" Margin="4,0,4,0" />
                     <Button
                         Margin="4,0"
                         VerticalAlignment="Center"

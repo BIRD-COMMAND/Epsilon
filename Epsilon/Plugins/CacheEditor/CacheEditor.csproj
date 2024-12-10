@@ -80,6 +80,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RTE\HaloOnline106708Provider.cs" />
+    <Compile Include="RTE\UI\TargetListItem.cs" />
     <Page Include="Components\CommandLog\CommandLogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -167,6 +169,18 @@
     <Compile Include="Models\GenericCacheFile.cs" />
     <Compile Include="Models\HaloOnlineCacheFile.cs" />
     <Compile Include="Models\ICacheFile.cs" />
+    <Compile Include="RTE\AggregateTargetSource.cs" />
+    <Compile Include="RTE\IRteTargetSource.cs" />
+    <Compile Include="RTE\IRteTargetCollection.cs" />
+    <Compile Include="RTE\IRteTarget.cs" />
+    <Compile Include="RTE\IRteService.cs" />
+    <Compile Include="RTE\IRteProvider.cs" />
+    <Compile Include="RTE\PCProcessTarget.cs" />
+    <Compile Include="RTE\RteProviderException.cs" />
+    <Compile Include="RTE\RteService.cs" />
+    <Compile Include="RTE\RteTargetCollection.cs" />
+    <Compile Include="RTE\RteTargetNotAvailableException.cs" />
+    <Compile Include="RTE\UI\TargetListModel.cs" />
     <Compile Include="TagEditing\TagExtract.cs" />
     <Compile Include="TagEditing\Messages\DefinitionDataChangedEvent.cs" />
     <Compile Include="TagEditing\TagEditorBase.cs" />
