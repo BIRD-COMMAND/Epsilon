@@ -16,8 +16,8 @@
 ✔ completely remove info window
 ✔ copy active Cache / Mod Info to clipboard with CTRL+I
 
-🔜 add Poke functionality from Epsilon-Poke application version
---- already found the code and implementation in ILSpy
+✔ add Poke functionality from Epsilon-Poke application version
+
 🔜 add Revert \ Undo Poke functionality
 
 🔜 script window text editing (general improvements, shouldn't be garbage)
