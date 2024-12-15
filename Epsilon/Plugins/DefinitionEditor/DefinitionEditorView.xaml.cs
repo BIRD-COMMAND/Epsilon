@@ -72,13 +72,13 @@ namespace DefinitionEditor
                 return;
 
             // Build the context menu      
-            var menu = new EMenu();
+            Node menu = Node.NewRoot(Item.k_ROOT, Item.k_ROOT);
             if (!vm.PopulateContextMenu(menu, field))
                 return;
 
             var ctxMenu = new ContextMenu();
-            menu.PopulateTopLevelMenu(menu, ctxMenu.Items);
-            if (ctxMenu.Items.Count == 0)
+            bool validMenu = menu.PopulateMenu(menu, ctxMenu.Items);
+            if (!validMenu || ctxMenu.Items.Count == 0)
                 return;
 
            

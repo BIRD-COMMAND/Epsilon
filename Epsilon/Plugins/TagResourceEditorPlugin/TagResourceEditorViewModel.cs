@@ -121,7 +121,7 @@ namespace TagResourceEditorPlugin
             }
         }
 
-        internal bool PopulateContextMenu(EMenu menu, IField field)
+        internal bool PopulateContextMenu(Node menu, IField field)
         {
             if (field == null)
                 return false;

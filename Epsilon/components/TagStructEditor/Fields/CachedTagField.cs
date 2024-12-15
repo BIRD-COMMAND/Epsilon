@@ -36,41 +36,57 @@ namespace TagStructEditor.Fields
             PasteTagNameCommand = new DelegateCommand(PasteTagName);
         }
 
-        private IEnumerable<TagGroupItem> GetValidGroups(ValueFieldInfo info, TagList tagList )
+        private const string k_obje = "obje";
+		private const string k_devi = "devi";
+		private const string k_unit = "unit";
+		private const string k_item = "item";
+		private const string k_rm   = "rm  ";
+		private const string k_argd = "argd";
+		private const string k_armr = "armr";
+		private const string k_bipd = "bipd";
+		private const string k_bloc = "bloc";
+		private const string k_cobj = "cobj";
+		private const string k_crea = "crea";
+		private const string k_ctrl = "ctrl";
+		private const string k_efsc = "efsc";
+		private const string k_eqip = "eqip";
+		private const string k_gint = "gint";
+		private const string k_mach = "mach";
+		private const string k_proj = "proj";
+		private const string k_scen = "scen";
+		private const string k_ssce = "ssce";
+		private const string k_term = "term";
+		private const string k_vehi = "vehi";
+		private const string k_weap = "weap";
+		private const string k_rmbk = "rmbk";
+		private const string k_rmcs = "rmcs";
+		private const string k_rmct = "rmct";
+		private const string k_rmd  = "rmd ";
+		private const string k_rmfl = "rmfl";
+		private const string k_rmgl = "rmgl";
+		private const string k_rmhg = "rmhg";
+		private const string k_rmsh = "rmsh";
+		private const string k_rmss = "rmss";
+		private const string k_rmtr = "rmtr";
+		private const string k_rmw  = "rmw ";
+		private const string k_rmzo = "rmzo";
+
+		private readonly string[] k_objeStrings = new string[18] { k_argd, k_armr, k_bipd, k_bloc, k_cobj, k_crea, k_ctrl, k_efsc, k_eqip, k_gint, k_mach, k_proj, k_scen, k_ssce, k_term, k_unit, k_vehi, k_weap };
+        private readonly string[] k_rmStrings = new string[12] { k_rmbk, k_rmcs, k_rmct, k_rmd, k_rmfl, k_rmgl, k_rmhg, k_rmsh, k_rmss, k_rmtr, k_rmw, k_rmzo };
+		private readonly string[] k_deviStrings = new string[4] { k_argd, k_ctrl, k_mach, k_term };
+		private readonly string[] k_unitStrings = new string[3] { k_bipd, k_gint, k_vehi };
+        private readonly string[] k_itemTags = new string[2] { k_eqip, k_weap };
+
+		private IEnumerable<TagGroupItem> GetValidGroups(ValueFieldInfo info, TagList tagList )
         {
-            var validTags = info.Attribute.ValidTags.ToList();
-            var parentTags = new string[] { "obje", "devi", "unit", "item", "rm  " };
-            var match = parentTags.FirstOrDefault(p => validTags.Contains(p));
-
-            if (!string.IsNullOrEmpty(match))
-            {
-                validTags.Remove(match);
-
-                switch(match)
-                {
-                    case "obje":
-                        validTags.AddRange( new string[] { "argd", "armr", "bipd", "bloc", 
-                            "cobj", "crea", "ctrl", "efsc", "eqip", "gint", "mach", "proj", "scen", 
-                            "ssce", "term", "unit", "vehi", "weap"});
-                        break;
-                    case "rm  ":
-                        validTags.AddRange(new string[] { "rmbk", "rmcs", "rmct", "rmd ",
-                            "rmfl", "rmgl", "rmhg", "rmsh", "rmss", "rmtr", "rmw ", "rmzo" });
-                        break;
-                    case "devi":
-                        validTags.AddRange(new string[] { "argd", "ctrl", "mach", "term" });
-                        break;
-                    case "unit":
-                        validTags.AddRange(new string[] { "bipd", "gint", "vehi" });
-                        break;
-                    case "item":
-                        validTags.AddRange(new string[] { "eqip", "weap" }) ;
-                        break;
-                }
-            }
-
-            return tagList.Groups.Where(x => validTags.Contains(x.TagAscii));
-        }
+            List<string> validTags = info.Attribute.ValidTags.ToList();
+            if      (validTags.Contains(k_obje))    { _ = validTags.Remove(k_obje); validTags.AddRange(k_objeStrings); }
+            else if (validTags.Contains(k_rm))      { _ = validTags.Remove(k_rm);   validTags.AddRange(k_rmStrings);   }
+			else if (validTags.Contains(k_devi))    { _ = validTags.Remove(k_devi); validTags.AddRange(k_deviStrings); }
+			else if (validTags.Contains(k_unit))    { _ = validTags.Remove(k_unit); validTags.AddRange(k_unitStrings); }
+			else if (validTags.Contains(k_item))    { _ = validTags.Remove(k_item); validTags.AddRange(k_itemTags);    }
+			return tagList.Groups.Where(x => validTags.Contains(x.TagAscii));
+		}
 
         public IEnumerable<TagGroupItem> Groups { get; set; }
         public TagGroupItem SelectedGroup { get; set; }
@@ -213,7 +229,7 @@ namespace TagStructEditor.Fields
                 if (Groups.Count() > 20)
                     validgroups = "unspecified";
 
-                MessageBox.Show($"\'{input}\' is not a valid group for this tag reference."
+                _ = MessageBox.Show($"\'{input}\' is not a valid group for this tag reference."
                     + $"\n\nValid tag groups: {validgroups}"
                     , "Invalid Tag Group");
             }
@@ -221,19 +237,21 @@ namespace TagStructEditor.Fields
             return group;
         }
 
-        protected override void OnPopulateContextMenu(EMenu menu)
+		protected override void OnPopulateContextMenu(Node menu)
         {
-            menu.Group("Copy")
+#pragma warning disable IDE0058 // Expression value is never used
+			menu.Submenu(EpsilonLib.Menus.Item.k_TagEditor)
+                .Add("Open in New Tab", command: GotoCommand)
+				.AddSeparator()
+				.Add(EpsilonLib.Menus.Item.k_TagFinder, tooltip: "Open a Tag browser to search for a Tag", command: BrowseCommand)
+                .AddSeparator()
                 .Add("Copy Tag Name", command: CopyTagNameCommand)
                 .Add("Copy Tag Index", command: CopyTagIndexCommand)
-                .Add("Paste Tag Name", command: PasteTagNameCommand);
+                .Add("Paste Tag Name", command: PasteTagNameCommand)
+                .AddSeparator()
+                .Add(EpsilonLib.Menus.Item.k_SetToNull, tooltip: "Set this Tag reference to a NULL ⌀ value", command: NullCommand);
 
-            menu.Group("CachedTag2")
-                .Add("Open in a new tab", command: GotoCommand)
-                .Add("Select a tag", tooltip: "Select a tag", command: BrowseCommand);
-
-            menu.Group("CachedTag3")
-                .Add("Null", tooltip: "Null this tag reference", command: NullCommand);
+#pragma warning restore IDE0058 // Expression value is never used
         }
 
         public override void Dispose()

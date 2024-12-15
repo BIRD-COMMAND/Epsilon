@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="Dialogs\AlertDialogViewModel.cs" />
     <Compile Include="Dialogs\InputDialogViewModel.cs" />
+    <Compile Include="Menus\Item.cs" />
     <Compile Include="Menus\SimpleMenu.cs" />
     <Compile Include="Options\OptionPageBase.cs" />
     <Compile Include="Shell\ClipboardEx.cs" />

@@ -311,74 +311,86 @@ namespace DefinitionEditor
 
 		}
 
+		internal bool PopulateContextMenu(Node menu, IField field) {
+			if (field == null) { return false; }
 
-		private void PopulateCopyMenu(EMenu menu, IField field) {
+			if (field is ValueField vf) {
+				bool blockOrStruct = field is InlineStructField || field is BlockField;
+
+				if (field is ValueField value && value.IsNot<BlockField, DataField, InlineStructField>()) {
+
+					_ = menu.Submenu(EpsilonLib.Menus.Item.k_FieldEditor)
+
+						.Add("Poke Field", new DelegateCommand(delegate { PokeField(value); }),
+							 "Pokes the current field to game memory")
+
+						.AddSeparator();
+
+				}
+
+				IField field2 = field;
+				IField field3 = field2;
+				if (field3 is StringIdField stringIdField) {
+
+					_ = menu.Submenu(EpsilonLib.Menus.Item.k_FieldEditor)
+
+						.Add("Edit Unicode String", new DelegateCommand(delegate { EditUnicString(stringIdField); }),
+							 "Open a dialog to edit this StringID's string, if it exists.")
+
+						.AddSeparator();
+
+				}
+
+				if (!blockOrStruct) {
+
+					_ = menu.Submenu(EpsilonLib.Menus.Item.k_FieldEditor)
+
+							.Add("Copy SetField Command", new DelegateCommand(delegate { CopySetFieldCommand(vf); }),
+								 "Copies the value of this field");
+
+				}
+				
+				_ = menu.Submenu(EpsilonLib.Menus.Item.k_FieldEditor)
+
+						.Add("Copy Name", new DelegateCommand(delegate { CopyFieldName(vf); }),
+							 "Copies the name of this field")
+						
+						.Add("Copy Path", new DelegateCommand(delegate { CopyFieldPath(vf); }),
+							 "Copies the path of this field");
+
+				if (!blockOrStruct) {
+
+					_ = menu
+						.Submenu(EpsilonLib.Menus.Item.k_FieldEditor)
+
+							.Add("Copy Value", new DelegateCommand(delegate { CopyFieldValue(vf); }),
+								 "Copies the value of this field")
+
+							.Add("Copy Path + Value", new DelegateCommand(delegate { CopyFieldPathWithValue(vf); }),
+								 "Copies the path and value of this field");
+
+				}
+
+				_ = menu.Submenu(EpsilonLib.Menus.Item.k_FieldEditor)
+					
+					.Add("Copy Offset", new DelegateCommand(delegate { CopyFieldOffset(vf); }),
+						 "Copies the offset of this field");
+
+			}
+
+			_ = menu.Submenu(EpsilonLib.Menus.Item.k_FieldEditor)
+
+				.Add("Copy Memory Address", new DelegateCommand(delegate { CopyFieldMemoryAddress(field); }, RteHasValidTargets), 
+					 "Copies the memory address of this field");
+
+			field.PopulateContextMenu(menu);
+
+			return true;
 
 		}
 
-		internal bool PopulateContextMenu(EMenu menu, IField field) {
-			if (field == null) { return false; }
-			if (field is ValueField vf) {
-				bool blockOrStruct = field is InlineStructField || field is BlockField;
-				if (!blockOrStruct) {
-					_ = menu.Submenu("Field").Group("Copy").Add(
-						"Copy SetField Command",
-						new DelegateCommand(delegate { CopySetFieldCommand(vf); }),
-						"Copies the value of this field"
-					);
-				}
-				_ = menu.Submenu("Field").Group("Copy").Add(
-					"Copy Name",
-					new DelegateCommand(delegate { CopyFieldName(vf); }),
-					"Copies the name of this field"
-				).Add(
-					"Copy Path",
-					new DelegateCommand(delegate { CopyFieldPath(vf); }),
-					"Copies the path of this field"
-				);
-				if (!blockOrStruct) {
-					_ = menu.Submenu("Field").Group("Copy").Add(
-						"Copy Path + Value",
-						new DelegateCommand(delegate { CopyFieldPathWithValue(vf); }),
-						"Copies the path and value of this field"
-					).Add(
-						"Copy Value",
-						new DelegateCommand(delegate { CopyFieldValue(vf); }),
-						"Copies the value of this field"
-					);
-				}
-				_ = menu.Submenu("Field").Group("Copy").Add(
-					"Copy Offset",
-					new DelegateCommand(delegate { CopyFieldOffset(vf); }),
-					"Copies the offset of this field"
-				);
-				IField field2 = field;
-				IField field3 = field2;
-				StringIdField stringIdField = field3 as StringIdField;
-				if (stringIdField != null) {
-					_ = menu.Group("StringId").Add(
-						"Edit Unicode String",
-						new DelegateCommand(delegate { EditUnicString(stringIdField); }),
-						"Open a dialog to edit this StringID's string, if it exists."
-					);
-				}
-			}
-			ValueField value = field as ValueField;
-			if (value != null && !( value is BlockField ) && !( value is DataField ) && !( value is InlineStructField )) {
-				_ = menu.Submenu("Field").Add(
-					"Poke Field", 
-					new DelegateCommand(delegate { PokeField(value); }), 
-					"Pokes the current field to game memory"
-				);
-			}
-			_ = menu.Submenu("Field").Group("Copy").Add(
-				"Copy Memory Address", 
-				new DelegateCommand(delegate { CopyFieldMemoryAddress(field); }, 
-				() => RteHasTargets && SelectedRteTargetItem != null), 
-				"Copies the memory address of this field"
-			);
-			field.PopulateContextMenu(menu);
-			return true;
+		private bool RteHasValidTargets() {
+			return RteHasTargets && SelectedRteTargetItem != null;
 		}
 
 		private void CopyFieldOffset(ValueField field) {

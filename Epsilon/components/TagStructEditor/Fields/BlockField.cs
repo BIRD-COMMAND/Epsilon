@@ -266,32 +266,31 @@ namespace TagStructEditor.Fields
             }
         }
 
-        protected override void OnPopulateContextMenu(EMenu menu)
+        protected override void OnPopulateContextMenu(Node menu)
         {
-            #pragma warning disable IDE0058 // Expression value is never used
-			
-            menu.Group("TagBlock10")
-                .Add("Go To Index", tooltip: "", command: GotoIndexCommand);
+#pragma warning disable IDE0058 // Expression value is never used
 
-			menu.Group("TagBlock1")
+            menu.AddHeader(Item.k_BlockEditor);
+            menu.Submenu(Item.k_Navigation)
+                .Add("Go To Index", tooltip: "", command: GotoIndexCommand)
+                .AddSeparator()
+				.Add("Collapse All", tooltip: "Collapse all children", command: CollapseAllCommand)
+                .Add("Expand All", tooltip: "Expand all children", command: ExpandAllCommand);
+            menu.Submenu(Item.k_AddCopyDelete)
                 .Add("Add", tooltip: "Add a new element", command: AddCommand)
                 .Add("Insert", tooltip: "Insert a new element at the current index", command: InsertCommand)
+                .Add("Duplicate", tooltip: "Duplicate the element at the current index", command: DuplicateCommand)
+                .AddSeparator()
                 .Add("Delete", tooltip: "Delete the element at the current index", command: DeleteCommand)
-                .Add("Duplicate", tooltip: "Duplicate the element at the current index", command: DuplicateCommand);
-
-            menu.Group("TagBlock2")
+                .Add("Delete All", tooltip: "Delete all elements", command: DeleteAllCommand);
+            menu.Submenu(Item.k_Edit_Pencil)
                 .Add("Shift Up", tooltip: "Shift the current element up one", command: ShiftUpCommand)
                 .Add("Shift Down", tooltip: "Shift the current element down one", command: ShiftDownCommand)
-                .Add("Delete All", tooltip: "Delete all elements", command: DeleteAllCommand);
-
-            menu.Group("TagBlock3")
+                .AddSeparator()
                 .Add("Copy Block", tooltip: "Copies a single block", command: CopyBlockCommand)
                 .Add("Copy Range...", tooltip: "Copies the entire set of blocks (for now)", command: CopyRangeCommand)
-                .Add("Paste Blocks At End", tooltip: "Append copied blocks to the end of the list", command: PasteBlocksAtEndCommand);
-
-            menu.Group("TagBlock4")
-                .Add("Collapse All", tooltip: "Collapse all children", command: CollapseAllCommand)
-                .Add("Expand All", tooltip: "Expand all children", command: ExpandAllCommand);
+                .Add("Paste Blocks At End", tooltip: "Append copied blocks to the end of the list", command: PasteBlocksAtEndCommand)
+                .AddSeparator();
 
             #pragma warning restore IDE0058 // Expression value is never used
         }
