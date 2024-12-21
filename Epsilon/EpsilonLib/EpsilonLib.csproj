@@ -57,6 +57,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\HexColorConverter.cs" />
     <Compile Include="Controls\ChromeWindow.cs" />
     <Compile Include="Converters\BoolToVisibilityInverseConverter.cs" />
     <Compile Include="Converters\StringVisibilityConverter.cs" />
